@@ -62,6 +62,8 @@ export interface Shop {
   hardshipIdx: number;
   stashIdx: number;
   visits: number;
+  /** true once known stash intel has added the hidden cash; it adds once per shop */
+  stashFound?: boolean;
 }
 
 export interface Note {

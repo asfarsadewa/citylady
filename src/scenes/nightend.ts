@@ -15,6 +15,7 @@ export class NightEndScene implements Scene {
   private surplus = 0;
   private line: string;
   private final: boolean;
+  private leaving = false;
 
   constructor(private run: Run) {
     const n = run.night!;
@@ -40,6 +41,9 @@ export class NightEndScene implements Scene {
   }
 
   private proceed() {
+    // one-shot: a second press must not advance the run again
+    if (this.leaving) return;
+    this.leaving = true;
     audio.sfx("ui_ok");
     audio.stopVoice();
     if (!this.success) return flow.retryNight();
@@ -106,7 +110,10 @@ export class NightEndScene implements Scene {
     }
     const label = !this.success ? t("end.retry") : this.final ? t("end.climb") : t("end.next");
     if (button(ctx, "go", label, W - 186, H - 38, 170, 26, { key: "E", accent: this.success ? COL.gold : COL.red })) this.proceed();
-    if (!this.success && button(ctx, "title", t("end.title"), W - 330, H - 38, 130, 26, {})) flow.toTitle();
+    if (!this.success && button(ctx, "title", t("end.title"), W - 330, H - 38, 130, 26, {}) && !this.leaving) {
+      this.leaving = true;
+      flow.toTitle();
+    }
     ctx.globalAlpha = 1;
     grain(ctx, 0.06);
   }

@@ -5,10 +5,10 @@ import { text, para, measure, lineHeight } from "../engine/text";
 import { DISTRICTS, TRAITS } from "../game/data";
 import { gossip, intelText, rng, clock, type Night, type Run, type Shop, type Intel } from "../game/state";
 import {
-  TACTICS, act, allowedMoves, applyMove, applyOpening, intelFor, sample, startDuel,
-  type Duel, type Move, type Tactic, type Opening, type LineJudgment,
+  TACTICS, act, allowedMoves, applyMove, applyOpening, intelFor, localMoveWeights, sample, startDuel,
+  type Duel, type Move, type Tactic, type Opening,
 } from "../game/negotiation";
-import { judge, ai, type Judgment } from "../game/ai";
+import { judgeLine, counterMoves, ai } from "../game/ai";
 import { COL, panel, bar, button, letterbox, vignette, grain, floatText, drawFloats, clearFloats, keycap } from "../ui/widgets";
 import { shade, withAlpha } from "./street";
 import artmeta from "../data/artmeta.json";
@@ -64,7 +64,10 @@ export class DuelScene implements Scene {
     this.district = DISTRICTS[run.district];
     this.portraitKey = shop.portrait;
     const stash = night.intel.some((i) => i.shopId === shop.id && i.kind === "stash");
-    if (stash && !banker) shop.cash += Math.round(shop.debt * 0.5);
+    if (stash && !banker && !shop.stashFound) {
+      shop.cash += Math.round(shop.debt * 0.5);
+      shop.stashFound = true;
+    }
     if (shop.visits > 1) {
       this.d.resolve += 10 * (shop.visits - 1);
       this.d.maxResolve = this.d.resolve;
@@ -186,8 +189,8 @@ export class DuelScene implements Scene {
     const n = this.night;
     const known = intelFor(n, this.d).map((i) => intelText(i, n, "en"));
     const lastAction = line ?? TACTICS.find((tac) => tac.id === tactic)!.name;
-    // ask Jev while Vela is speaking, so the latency hides behind her line
-    const pending: Promise<Judgment> = judge(this.d, lastAction, known, line);
+    // judge the typed line while Vela is speaking, so the latency hides behind her line
+    const pending = line ? judgeLine(this.d, known, line) : Promise.resolve(undefined);
     audio.sfx("cloth", { vol: 0.4 });
     if (line) {
       this.velaFace = VELA_FACE.improvise;
@@ -197,12 +200,13 @@ export class DuelScene implements Scene {
       const lines = VELA_LINES[tactic];
       await this.velaSay(lines[this.r.int(0, lines.length - 1)], VELA_FACE[tactic]);
     }
-    const j = await pending;
+    const L = await pending;
     this.d.transcript.push(`Vela: ${line ?? lastAction}`);
-    const res = act(this.run, n, this.d, tactic, this.r.next, j.line as LineJudgment | undefined);
+    const res = act(this.run, n, this.d, tactic, this.r.next, L);
     n.minutes += 12;
-    if (j.line) {
-      const L = j.line;
+    // the debtor reacts to the state after the tactic lands; ask now, behind the hit animation
+    const counter = this.d.resolve <= 0 || this.d.temper >= 100 ? null : counterMoves(this.d, lastAction, known);
+    if (L) {
       const tname = L.tactic === "nonsense" ? t("banner.no_tactic") : t(`tac.${L.tactic}` as Key);
       this.banners.push({ text: t("banner.judge", { src: L.source === "jev" ? "JEV" : "LOCAL", tactic: tname, fit: Math.round(L.fit * 100) }) + (L.usesFact > 0.6 ? t("banner.uses_intel") : ""), t: 0, color: COL.violet });
     }
@@ -217,7 +221,7 @@ export class DuelScene implements Scene {
     await this.sleep(0.8);
     if (await this.checkEnd()) return;
     // the debtor answers
-    const moveW = j.moveWeights;
+    const moveW = counter ? await counter : localMoveWeights(this.d);
     const allowed = allowedMoves(this.d);
     for (const k of Object.keys(moveW)) if (!allowed.includes(k as Move)) delete moveW[k];
     const move = sample(Object.keys(moveW).length ? moveW : { stall: 1 }, this.r.next) as Move;

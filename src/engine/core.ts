@@ -181,6 +181,11 @@ export function start(canvas: HTMLCanvasElement) {
       }
     }
     if (current && fadeDir <= 0) current.update(dt);
+    // the outgoing scene still draws during a fade-out, but its buttons must not act again
+    else if (fadeDir > 0) {
+      pointer.clicked = false;
+      pressed.clear();
+    }
     ctx.save();
     if (shake.amp > 0.2) {
       ctx.translate(Math.round((Math.random() - 0.5) * shake.amp), Math.round((Math.random() - 0.5) * shake.amp));

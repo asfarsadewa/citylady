@@ -67,6 +67,8 @@ interface JudgeInput {
   allowed: string[];
   line?: string;
   known: string[];
+  /** "line" judges the typed line; "move" picks the counter-move from the state after the tactic lands. */
+  want: "line" | "move" | "both";
 }
 
 const clip = (s: unknown, n: number) => String(s ?? "").slice(0, n);
@@ -91,6 +93,7 @@ function sanitize(raw: any): JudgeInput | null {
     allowed,
     line: raw.line ? clip(raw.line, 180) : undefined,
     known: arr(raw.known, 6, 160),
+    want: raw.want === "line" || raw.want === "move" ? raw.want : "both",
   };
 }
 
@@ -103,6 +106,9 @@ async function judge(req: Request, env: Env): Promise<Response> {
   }
   const input = sanitize(await req.json().catch(() => null));
   if (!input) return json({ ok: false, error: "bad input" }, 400);
+  if (input.want === "line" && !input.line) return json({ ok: false, error: "no line" }, 400);
+  const wantMove = input.want !== "line";
+  const wantLine = input.want !== "move" && !!input.line;
 
   const state = {
     debtor: {
@@ -119,15 +125,16 @@ async function judge(req: Request, env: Env): Promise<Response> {
     collector_latest: input.line ?? input.lastAction,
     collector_known_facts_about_debtor: input.known,
   };
-  const questions: Record<string, unknown> = {
-    move: {
+  const questions: Record<string, unknown> = {};
+  if (wantMove) {
+    questions.move = {
       type: "choice",
       instructions:
         "The debtor must answer `collector_latest`. Given the debtor's temperament, mood, anger and willingness to resist, which response is the most believable in character right now?",
       criteria: Object.fromEntries(input.allowed.map((m) => [m, MOVES[m]])),
-    },
-  };
-  if (input.line) {
+    };
+  }
+  if (wantLine) {
     questions.tactic = {
       type: "choice",
       instructions: "Which persuasion tactic does `collector_latest` mainly use on the debtor?",
@@ -171,8 +178,8 @@ async function judge(req: Request, env: Env): Promise<Response> {
   const a = out.answers;
   return json({
     ok: true,
-    move: { choice: a.move.choice, p: a.move.probabilities },
-    line: input.line
+    move: wantMove ? { choice: a.move.choice, p: a.move.probabilities } : undefined,
+    line: wantLine
       ? {
           tactic: a.tactic.choice,
           tacticP: a.tactic.probabilities,

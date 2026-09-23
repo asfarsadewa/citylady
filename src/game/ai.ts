@@ -51,22 +51,21 @@ export async function initAI() {
   }
 }
 
-export interface Judgment {
-  moveWeights: Record<string, number>;
-  line?: LineJudgment;
-}
-
 const MOODS = (d: Duel) =>
   d.temper > 70 ? "furious" : d.temper > 40 ? "irritated" : d.resolve < 30 ? "cornered and worn down" : d.resolve < 60 ? "wavering" : "defiant";
 
-export async function judge(d: Duel, lastAction: string, known: string[], line?: string): Promise<Judgment> {
-  const fallback = (): Judgment => {
-    ai.lastSource = "local";
-    return { moveWeights: localMoveWeights(d), line: line ? localJudge(line, d, known) : undefined };
-  };
-  if (ai.status !== "online") return fallback();
+type Want = "line" | "move";
+interface JudgeOut {
+  move?: { p: Record<string, number> };
+  line?: { tactic: LineJudgment["tactic"]; fit: number; usesFact: number; abusive: number };
+}
+
+/** One call to the worker. Returns null on any failure so callers fall back to local rules. */
+async function ask(d: Duel, want: Want, lastAction: string, known: string[], line?: string): Promise<JudgeOut | null> {
+  if (ai.status !== "online") return null;
   const facts = [`${d.shop.hardship}`, `${d.shop.owner} ${d.shop.secret}`];
   const body = {
+    want,
     debtor: {
       name: d.shop.owner,
       shop: `${d.shop.label} called ${d.shop.name}`,
@@ -88,19 +87,37 @@ export async function judge(d: Duel, lastAction: string, known: string[], line?:
     const res = await fetch("/api/judge", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body), signal: ctl.signal });
     clearTimeout(timer);
     if (res.status === 401) ai.status = "offline";
-    if (!res.ok) return fallback();
-    const out = (await res.json()) as { move: { p: Record<string, number> }; line?: { tactic: LineJudgment["tactic"]; fit: number; usesFact: number; abusive: number } };
-    ai.lastSource = "jev";
-    // blend Jev's calibrated probabilities with the rules so every allowed move stays possible
-    const local = localMoveWeights(d);
-    const lsum = Object.values(local).reduce((a, b) => a + b, 0);
-    const w: Record<string, number> = {};
-    for (const m of Object.keys(local)) w[m] = 0.55 * (out.move.p[m] ?? 0) + 0.45 * (local[m] / lsum);
-    return {
-      moveWeights: w,
-      line: out.line ? { tactic: out.line.tactic, fit: out.line.fit, usesFact: out.line.usesFact, abusive: out.line.abusive, source: "jev" } : undefined,
-    };
+    if (!res.ok) return null;
+    return (await res.json()) as JudgeOut;
   } catch {
-    return fallback();
+    return null;
   }
+}
+
+/** Judges what the player typed, against the state before the tactic lands. */
+export async function judgeLine(d: Duel, known: string[], line: string): Promise<LineJudgment> {
+  const out = await ask(d, "line", line, known, line);
+  if (!out?.line) {
+    ai.lastSource = "local";
+    return localJudge(line, d, known);
+  }
+  ai.lastSource = "jev";
+  const L = out.line;
+  return { tactic: L.tactic, fit: L.fit, usesFact: L.usesFact, abusive: L.abusive, source: "jev" };
+}
+
+/**
+ * Counter-move weights from the state after the tactic lands, so a threshold the tactic
+ * just crossed (bargain, bluster, pay) is possible on this answer.
+ */
+export async function counterMoves(d: Duel, lastAction: string, known: string[]): Promise<Record<string, number>> {
+  const local = localMoveWeights(d);
+  const out = await ask(d, "move", lastAction, known);
+  ai.lastSource = out?.move ? "jev" : "local";
+  if (!out?.move) return local;
+  // blend Jev's calibrated probabilities with the rules so every allowed move stays possible
+  const lsum = Object.values(local).reduce((a, b) => a + b, 0);
+  const w: Record<string, number> = {};
+  for (const m of Object.keys(local)) w[m] = 0.55 * (out.move.p[m] ?? 0) + 0.45 * (local[m] / lsum);
+  return w;
 }
