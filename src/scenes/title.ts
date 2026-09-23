@@ -1,24 +1,15 @@
 // Title screen: rooftop key art, rain, logo, menu and the how-to-play sheet.
 import { W, H, img, input, post, setAnalog, type Scene } from "../engine/core";
 import { audio } from "../engine/audio";
-import { text, para } from "../engine/text";
+import { text, para, measure, lineHeight } from "../engine/text";
 import { WeatherFx } from "../game/weather";
 import { load } from "../game/state";
 import { ai } from "../game/ai";
 import { COL, panel, button, vignette, grain, letterbox } from "../ui/widgets";
 import * as flow from "./flow";
+import { t, lang, setLang, LANGS, type Key } from "../i18n";
 
-const HELP = [
-  ["Goal", "Collect the quota in each district before dawn. Ten districts lead to Madame Hale's tower."],
-  ["Street", "Walk with A and D or the arrow keys. Hold Shift to run. Walking uses time. Press E at a door to enter a shop."],
-  ["Benches", "Rest on a bench to get composure back. Rest takes 30 minutes. You can hear gossip there."],
-  ["Duel", "Break the debtor's resolve to collect. If anger gets to the top, the debtor throws you out."],
-  ["Tactics", "Each debtor has hidden traits. Use Read to find them. Match the tactic to the trait. Chain tactics for combos."],
-  ["Say it", "Type your own line. The AI judge reads the tactic and the fit with the debtor. Use intel in your line for a bonus."],
-  ["Intel", "A debtor who pays tells you gossip. A secret unlocks Leverage. A hardship makes Charm and Offer stronger."],
-  ["Heat", "Pressure and threats add heat. At full heat a patrol stops you. You lose one hour."],
-  ["Reputation", "Fear and grace change how the next debtors react. They also decide the ending."],
-];
+const HELP = ["goal", "street", "bench", "duel", "tactics", "say", "intel", "heat", "rep"];
 
 export class TitleScene implements Scene {
   private t = 0;
@@ -35,8 +26,15 @@ export class TitleScene implements Scene {
   update(dt: number) {
     this.t += dt;
     this.fx.update(dt);
+    if (input.pressed("lang")) this.nextLang();
     if (this.help && (input.pressed("back") || input.pressed("ok"))) this.help = false;
     else if (!this.help && input.pressed("ok")) this.start(this.hasSave);
+  }
+
+  private nextLang() {
+    const i = LANGS.indexOf(lang());
+    setLang(LANGS[(i + 1) % LANGS.length]);
+    audio.sfx("ui_ok", { vol: 0.6 });
   }
 
   private start(cont: boolean) {
@@ -66,41 +64,44 @@ export class TitleScene implements Scene {
     // logo with a slow neon flicker
     const flick = Math.sin(this.t * 23) > 0.97 ? 0.6 : 1;
     ctx.globalAlpha = a;
-    text(ctx, "CITY", 36, 60, { font: "big", color: COL.paper, shadow: "#3a0a14" });
-    text(ctx, "LADY", 36, 108, { font: "big", color: COL.crimson, shadow: "#1a0006", alpha: flick });
+    text(ctx, "CITY", 36, 60, { font: "logo", color: COL.paper, shadow: "#3a0a14" });
+    text(ctx, "LADY", 36, 108, { font: "logo", color: COL.crimson, shadow: "#1a0006", alpha: flick });
     ctx.fillStyle = COL.gold;
-    ctx.fillRect(38, 160, 186, 1);
-    text(ctx, "TEN NIGHTS. TEN DISTRICTS. ONE LEDGER.", 38, 166, { font: "small", color: COL.gold });
+    ctx.fillRect(38, 160, Math.max(186, measure(t("title.tagline"), "small")), 1);
+    text(ctx, t("title.tagline"), 38, 166, { font: "small", color: COL.gold });
 
     if (!this.help) {
       let y = 178;
       if (this.hasSave) {
-        if (button(ctx, "cont", "Continue", 36, y, 160, 22, { key: "E" })) this.start(true);
+        if (button(ctx, "cont", t("menu.continue"), 36, y, 160, 22, { key: "E" })) this.start(true);
         y += 27;
       }
-      if (button(ctx, "new", "New game", 36, y, 160, 22, { key: this.hasSave ? undefined : "E" })) this.start(false);
+      if (button(ctx, "new", t("menu.new"), 36, y, 160, 22, { key: this.hasSave ? undefined : "E" })) this.start(false);
       y += 27;
-      if (button(ctx, "help", "How to play", 36, y, 160, 22, {})) this.help = true;
+      if (button(ctx, "help", t("menu.help"), 36, y, 160, 22, {})) this.help = true;
       y += 27;
       const muted = audio.volumes.master === 0;
-      if (button(ctx, "snd", muted ? "Sound: off" : "Sound: on", 36, y, 160, 22, { key: "M" })) {
+      if (button(ctx, "snd", muted ? t("menu.sound_off") : t("menu.sound_on"), 36, y, 160, 22, { key: "M" })) {
         audio.unlock();
         audio.volumes.master = muted ? 0.9 : 0;
         audio.applyVolumes();
       }
       y += 27;
       const analog = (post?.amount ?? 0) > 0;
-      if (button(ctx, "vhs", analog ? "Analog look: on" : "Analog look: off", 36, y, 160, 22, { key: "V" })) setAnalog(analog ? 0 : 1);
-      text(ctx, ai.status === "online" ? "AI judge: Jev online" : ai.status === "checking" ? "AI judge: checking" : "AI judge: local rules", 36, 318, { font: "small", color: ai.status === "online" ? COL.violet : COL.dim });
+      if (button(ctx, "vhs", analog ? t("menu.analog_on") : t("menu.analog_off"), 36, y, 160, 22, { key: "V" })) setAnalog(analog ? 0 : 1);
+      y += 27;
+      // cycles English, Bahasa Indonesia, Chinese; each label names the language in that language
+      if (button(ctx, "lang", t("menu.lang"), 36, y, 160, 22, { key: "L" })) this.nextLang();
+      text(ctx, ai.status === "online" ? t("ai.online") : ai.status === "checking" ? t("ai.checking") : t("ai.local"), 36, 332, { font: "small", color: ai.status === "online" ? COL.violet : COL.dim });
     } else {
       panel(ctx, 24, 30, W - 48, H - 60, COL.gold, "rgba(14,9,20,0.96)");
-      text(ctx, "HOW TO PLAY", 38, 38, { font: "title", color: COL.gold });
-      let y = 62;
-      for (const [h, body] of HELP) {
-        text(ctx, h.toUpperCase(), 38, y + 1, { font: "small", color: COL.crimson });
-        y += para(ctx, body, 120, y, W - 170, { color: COL.paper }) + 5;
+      text(ctx, t("help.title"), 38, 38, { font: "title", color: COL.gold });
+      let y = 38 + lineHeight("title") + 6;
+      for (const k of HELP) {
+        text(ctx, t(`help.${k}.h` as Key).toUpperCase(), 38, y + 1, { font: "small", color: COL.crimson });
+        y += para(ctx, t(`help.${k}.b` as Key), 120, y, W - 170, { color: COL.paper }) + 3;
       }
-      if (button(ctx, "back", "Back", W - 110, H - 56, 80, 20, { key: "ESC" })) this.help = false;
+      if (button(ctx, "back", t("menu.back"), W - 124, 34, 90, 20, { key: "ESC" })) this.help = false;
     }
     ctx.globalAlpha = 1;
     grain(ctx, 0.07);

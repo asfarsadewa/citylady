@@ -21,7 +21,7 @@ class Loading implements Scene {
   p = 0;
   update() {}
   draw(ctx: CanvasRenderingContext2D) {
-    text(ctx, "CITY LADY", W / 2, H / 2 - 30, { font: "title", color: COL.crimson, align: "center" });
+    text(ctx, "CITY LADY", W / 2, H / 2 - 30, { font: "logoSmall", color: COL.crimson, align: "center" });
     bar(ctx, W / 2 - 80, H / 2, 160, 3, this.p, COL.gold);
   }
 }
@@ -53,6 +53,15 @@ async function boot() {
     w.hold = hold;
     w.tap = (code: string) => hold(code, 60);
     w.sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    // click at game coordinates (640x360), for driving menus in tests
+    w.clickGame = (gx: number, gy: number) => {
+      const c = document.getElementById("game")!;
+      const r = c.getBoundingClientRect();
+      const o = { clientX: r.left + (gx / W) * r.width, clientY: r.top + (gy / H) * r.height, pointerType: "mouse", bubbles: true };
+      c.dispatchEvent(new PointerEvent("pointermove", o));
+      c.dispatchEvent(new PointerEvent("pointerdown", o));
+      dispatchEvent(new PointerEvent("pointerup", o));
+    };
   }
   const q = new URLSearchParams(location.search);
   if (import.meta.env.DEV && q.has("vela")) {

@@ -11,3 +11,5 @@ art/sprite/*_rejected.png
 wrangler.production.jsonc
 __pycache__/
 *.pyc
+art/fonts/
+art/og/*.ttf

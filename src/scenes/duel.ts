@@ -1,9 +1,9 @@
 // The negotiation duel: an over-the-shoulder confrontation with a debtor, turn by turn.
 import { W, H, img, input, pointer, kick, time, clamp, easeOut, lerp, type Scene } from "../engine/core";
 import { audio } from "../engine/audio";
-import { text, para, measure } from "../engine/text";
-import { DISTRICTS, TRAIT_LABEL, TRAIT_HINT, TRAITS } from "../game/data";
-import { gossip, rng, clock, type Night, type Run, type Shop, type Intel } from "../game/state";
+import { text, para, measure, lineHeight } from "../engine/text";
+import { DISTRICTS, TRAITS } from "../game/data";
+import { gossip, intelText, rng, clock, type Night, type Run, type Shop, type Intel } from "../game/state";
 import {
   TACTICS, act, allowedMoves, applyMove, applyOpening, intelFor, sample, startDuel,
   type Duel, type Move, type Tactic, type Opening, type LineJudgment,
@@ -11,11 +11,10 @@ import {
 import { judge, ai, type Judgment } from "../game/ai";
 import { COL, panel, bar, button, letterbox, vignette, grain, floatText, drawFloats, clearFloats, keycap } from "../ui/widgets";
 import { shade, withAlpha } from "./street";
-import voiceData from "../data/voice.json";
 import artmeta from "../data/artmeta.json";
 import * as flow from "./flow";
+import { t, sub as subtitle, type Key } from "../i18n";
 
-const VOICE = voiceData as Record<string, { s: string; t: string }>;
 const META = artmeta as Record<string, { w: number; h: number }>;
 type Phase = "intro" | "opening" | "player" | "typing" | "busy" | "end";
 
@@ -134,14 +133,14 @@ export class DuelScene implements Scene {
   private velaSay(id: string, face: string) {
     this.velaFace = face;
     this.velaFaceT = 0;
-    return this.say("Vela", VOICE[id]?.t ?? "", id, COL.crimson);
+    return this.say(t("name.vela"), subtitle(id), id, COL.crimson);
   }
 
   private debtorBark(move: Move): Promise<void> {
     const shop = this.shop;
     if (this.d.banker) {
       const id = move === "pay" ? "hale_yield" : move === "crack" ? "hale_crack" : `hale_duel_${this.r.int(1, 3)}`;
-      return this.say(shop.owner, VOICE[id].t, id, COL.gold);
+      return this.say(t("name.hale"), subtitle(id), id, COL.gold);
     }
     const cat = MOVE_CAT[move];
     if (!cat) {
@@ -149,16 +148,16 @@ export class DuelScene implements Scene {
       return this.say(shop.owner, "...", null, COL.gold, 1.1);
     }
     const id = `${shop.voice}_${cat}_${this.r.int(1, COUNTS[cat])}`;
-    return this.say(shop.owner, VOICE[id]?.t ?? "...", id, COL.gold);
+    return this.say(shop.owner, subtitle(id) || "...", id, COL.gold);
   }
 
   // ---------- sequences ----------
   private async introSeq() {
     await this.sleep(0.9);
     if (this.d.banker) {
-      await this.say("Madame Hale", VOICE.fin_1.t, "fin_1", COL.gold);
+      await this.say(t("name.hale"), subtitle("fin_1"), "fin_1", COL.gold);
       await this.velaSay("fin_2", "vela_cold");
-      await this.say("Madame Hale", VOICE.fin_3.t, "fin_3", COL.gold);
+      await this.say(t("name.hale"), subtitle("fin_3"), "fin_3", COL.gold);
       await this.velaSay("fin_4", "vela_cold");
       this.d.demanded = 100000;
       this.phase = "player";
@@ -172,8 +171,8 @@ export class DuelScene implements Scene {
     audio.sfx("ui_ok", { vol: 0.7 });
     applyOpening(this.run, this.d, o);
     this.resolveGhost = this.d.resolve / this.d.maxResolve;
-    if (o === "half") this.note = "You ask for half tonight. The rest becomes a note for the next night.";
-    else if (o === "fee") this.note = "You add a late fee. The debtor resists more.";
+    if (o === "half") this.note = t("note.half");
+    else if (o === "fee") this.note = t("note.fee");
     else this.note = "";
     this.phase = "player";
   }
@@ -183,15 +182,15 @@ export class DuelScene implements Scene {
     this.phase = "busy";
     this.note = "";
     const n = this.night;
-    const known = intelFor(n, this.d).map((i) => i.text);
-    const lastAction = line ?? TACTICS.find((t) => t.id === tactic)!.name;
+    const known = intelFor(n, this.d).map((i) => intelText(i, n, "en"));
+    const lastAction = line ?? TACTICS.find((tac) => tac.id === tactic)!.name;
     // ask Jev while Vela is speaking, so the latency hides behind her line
     const pending: Promise<Judgment> = judge(this.d, lastAction, known, line);
     audio.sfx("cloth", { vol: 0.4 });
     if (line) {
       this.velaFace = VELA_FACE.improvise;
       this.velaFaceT = 0;
-      await this.say("Vela", line, null, COL.crimson, 1.6);
+      await this.say(t("name.vela"), line, null, COL.crimson, 1.6);
     } else {
       const lines = VELA_LINES[tactic];
       await this.velaSay(lines[this.r.int(0, lines.length - 1)], VELA_FACE[tactic]);
@@ -202,16 +201,16 @@ export class DuelScene implements Scene {
     n.minutes += 12;
     if (j.line) {
       const L = j.line;
-      const tname = L.tactic === "nonsense" ? "No tactic" : TACTICS.find((t) => t.id === L.tactic)?.name ?? L.tactic;
-      this.banner = { text: `${L.source === "jev" ? "JEV" : "LOCAL"}: ${tname} · fit ${Math.round(L.fit * 100)}%${L.usesFact > 0.6 ? " · uses intel" : ""}`, t: 0 };
+      const tname = L.tactic === "nonsense" ? t("banner.no_tactic") : t(`tac.${L.tactic}` as Key);
+      this.banner = { text: t("banner.judge", { src: L.source === "jev" ? "JEV" : "LOCAL", tactic: tname, fit: Math.round(L.fit * 100) }) + (L.usesFact > 0.6 ? t("banner.uses_intel") : ""), t: 0 };
     }
     if (res.combo) {
-      this.banner = { text: `COMBO: ${res.combo.toUpperCase()}`, t: 0 };
+      this.banner = { text: t("banner.combo", { name: t(`combo.${res.combo}` as Key).toUpperCase() }), t: 0 };
       audio.sfx("impact", { vol: 0.8 });
     }
     if (res.damage > 0) this.hit(res.damage, res.effectiveness);
     else if (res.revealed) audio.sfx("paper", { vol: 0.6 });
-    if (res.temper > 10) floatText(492, 108, `ANGER +${Math.round(res.temper)}`, COL.red, "bold");
+    if (res.temper > 10) floatText(492, 108, t("float.anger", { v: Math.round(res.temper) }), COL.red, "bold");
     if (res.note) this.note = res.note;
     await this.sleep(0.8);
     if (await this.checkEnd()) return;
@@ -227,10 +226,10 @@ export class DuelScene implements Scene {
       audio.sfx("slam", { vol: 0.7 });
     }
     await this.debtorBark(move);
-    this.note = mr.note + (mr.revealed ? ` ${TRAIT_LABEL[mr.revealed]}.` : "");
+    this.note = mr.note + (mr.revealed ? ` ${t(`trait.${mr.revealed}` as Key)}.` : "");
     if (await this.checkEnd()) return;
     if (n.minutes >= this.shop.closes && !this.d.banker) {
-      this.note = "It is closing time. The debtor locks up.";
+      this.note = t("note.closing");
       await this.sleep(1.2);
       return this.finish("closed");
     }
@@ -244,8 +243,8 @@ export class DuelScene implements Scene {
     this.flash = Math.min(1, dmg / 30);
     kick(Math.min(7, 2 + dmg / 8));
     audio.sfx(dmg > 25 ? "impact" : "stamp", { vol: 0.5 + Math.min(0.5, dmg / 60) });
-    const tag = eff >= 1.5 ? "CRUSHING" : eff >= 1.1 ? "STRONG" : eff < 0.6 ? "WEAK" : "";
-    floatText(492, 130, `-${dmg} RESOLVE`, dmg > 25 ? COL.gold : COL.paper);
+    const tag = eff >= 1.5 ? t("float.crushing") : eff >= 1.1 ? t("float.strong") : eff < 0.6 ? t("float.weak") : "";
+    floatText(492, 130, t("float.resolve", { v: dmg }), dmg > 25 ? COL.gold : COL.paper);
     if (tag) floatText(492, 150, tag, eff < 0.6 ? COL.dim : COL.crimson, "bold");
     if (this.d.resolve / this.d.maxResolve < 0.3) audio.sfx("heartbeat", { vol: 0.7 });
   }
@@ -289,12 +288,12 @@ export class DuelScene implements Scene {
     if (d.banker) {
       await this.sleep(0.6);
       if (kind === "paid") {
-        this.stamp("SETTLED", COL.gold);
+        this.stamp(t("stamp.settled"), COL.gold);
         audio.sfx("success");
         await this.sleep(2.4);
         flow.toEnding(run.grace >= run.fear ? "grace" : "fear");
       } else {
-        this.stamp(kind === "thrown" ? "DENIED" : "UNSETTLED", COL.red);
+        this.stamp(kind === "thrown" ? t("stamp.denied") : t("stamp.unsettled"), COL.red);
         audio.sfx("fail");
         await this.sleep(2.4);
         flow.toEnding("fail");
@@ -313,34 +312,34 @@ export class DuelScene implements Scene {
       s.status = kind === "paid" ? "paid" : "partial";
       audio.sfx("coins");
       setTimeout(() => audio.sfx("register", { vol: 0.7 }), 400);
-      this.stamp(kind === "paid" ? "PAID" : "SETTLED", kind === "paid" ? COL.crimson : COL.teal);
+      this.stamp(kind === "paid" ? t("stamp.paid") : t("stamp.settled"), kind === "paid" ? COL.crimson : COL.teal);
       await this.velaSay(`paid_${this.r.int(1, 3)}`, "vela_smirk");
-      lines.push(`${s.owner} paid ${paid}.`);
+      lines.push(t("out.paid_line", { owner: s.owner, v: paid }));
       const rest = (kind === "paid" ? d.demanded : 0) - paid;
       const halfNote = kind === "paid" && d.half ? s.debt - d.demanded : 0;
       const owed = Math.max(0, rest) + halfNote;
       if (owed > 0) {
         const rel = clamp(0.45 + 0.1 * s.traits.heart + 0.1 * s.traits.logic + (halfNote ? 0.2 : 0), 0.3, 0.92);
         run.notes.push({ from: s.owner, amount: owed, reliability: rel });
-        lines.push(`${s.owner} signs a note for ${owed}. It is due next night. The chance of payment is ${Math.round(rel * 100)}%.`);
+        lines.push(t("out.note_line", { owner: s.owner, v: owed, p: Math.round(rel * 100) }));
       }
       if (kind === "paid") {
         intel = gossip(run, n, s, this.r);
-        if (intel) lines.push("The debtor tells you some gossip.");
+        if (intel) lines.push(t("out.gossip"));
       }
-      this.outcome = { title: kind === "paid" ? "Collected" : "Settled", lines, color: kind === "paid" ? COL.gold : COL.teal, intel };
+      this.outcome = { title: kind === "paid" ? t("out.collected") : t("out.settled"), lines, color: kind === "paid" ? COL.gold : COL.teal, intel };
     } else if (kind === "thrown") {
       s.status = "banned";
       n.heat += 15;
       run.fear = Math.min(100, run.fear + 2);
-      this.stamp("THROWN OUT", COL.red);
+      this.stamp(t("stamp.thrown"), COL.red);
       audio.sfx("fail");
       await this.velaSay(`out_${this.r.int(1, 2)}`, "vela_tired");
-      this.outcome = { title: "Thrown out", lines: [`${s.owner} bans you for the night.`, "Heat +15."], color: COL.red };
+      this.outcome = { title: t("out.thrown"), lines: [t("out.banned", { owner: s.owner }), t("out.heat")], color: COL.red };
     } else if (kind === "closed") {
-      this.outcome = { title: "Closing time", lines: ["The shop closes. You cannot come back tonight."], color: COL.dim };
+      this.outcome = { title: t("out.closing"), lines: [t("out.closed")], color: COL.dim };
     } else {
-      this.outcome = { title: "You walk out", lines: ["You can come back later. The debtor resists more on your next visit."], color: COL.dim };
+      this.outcome = { title: t("out.walk"), lines: [t("out.left")], color: COL.dim };
     }
   }
 
@@ -363,7 +362,7 @@ export class DuelScene implements Scene {
     const el = document.createElement("input");
     el.className = "say-field";
     el.maxLength = 160;
-    el.placeholder = "Type your line. Press Enter to say it.";
+    el.placeholder = t("say.placeholder");
     document.body.appendChild(el);
     el.focus();
     input.typing = true;
@@ -532,20 +531,26 @@ export class DuelScene implements Scene {
     // name card and meters
     const cx = 380, cy = 8;
     ctx.globalAlpha = intro;
+    // rows stack by line height so larger CJK glyphs never collide
+    const r1 = cy + lineHeight("title");
+    const r2 = r1 + lineHeight("small") + 3;
+    const r3 = r2 + lineHeight("small") + 3;
+    const r4 = r3 + lineHeight("small") + 1;
     text(ctx, s.owner.toUpperCase(), cx, cy, { font: "title", color: COL.paper });
-    text(ctx, d.banker ? "The Lantern Bank" : `${s.name} · ${s.label}`, cx, cy + 18, { font: "small", color: COL.dim });
-    text(ctx, "RESOLVE", cx, cy + 30, { font: "small", color: COL.gold });
-    bar(ctx, cx + 44, cy + 31, 200, 6, d.resolve / d.maxResolve, COL.gold, this.resolveGhost);
-    text(ctx, "ANGER", cx, cy + 42, { font: "small", color: COL.red });
-    bar(ctx, cx + 44, cy + 43, 200, 4, d.temper / 100, d.temper > 70 ? COL.red : "#c0503c");
-    const traits = TRAITS.filter((k) => s.revealed.includes(k) && s.traits[k] > 0).map((k) => TRAIT_LABEL[k]);
+    text(ctx, d.banker ? t("shop.bank") : `${s.name} · ${t(`shop.${s.type}` as Key)}`, cx, r1, { font: "small", color: COL.dim });
+    const labW = Math.max(measure(t("duel.resolve"), "small"), measure(t("duel.anger"), "small")) + 6;
+    text(ctx, t("duel.resolve"), cx, r2, { font: "small", color: COL.gold });
+    bar(ctx, cx + labW, r2 + 1, 244 - labW, 6, d.resolve / d.maxResolve, COL.gold, this.resolveGhost);
+    text(ctx, t("duel.anger"), cx, r3, { font: "small", color: COL.red });
+    bar(ctx, cx + labW, r3 + 1, 244 - labW, 4, d.temper / 100, d.temper > 70 ? COL.red : "#c0503c");
+    const traits = TRAITS.filter((k) => s.revealed.includes(k) && s.traits[k] > 0).map((k) => t(`trait.${k}` as Key));
     const intel = intelFor(n, d);
-    const tags = [...traits, ...intel.map((i) => (i.kind === "secret" ? "Secret" : i.kind === "stash" ? "Stash" : "Hardship"))];
-    text(ctx, tags.length ? tags.join(" · ") : "Use Read to learn this debtor's traits.", cx, cy + 52, { font: "small", color: tags.length ? COL.violet : "#6e6380" });
+    const tags = [...traits, ...intel.map((i) => t(`tag.${i.kind}` as Key))];
+    text(ctx, tags.length ? tags.join(" · ") : t("duel.use_read"), cx, r4, { font: "small", color: tags.length ? COL.violet : "#6e6380" });
     const lastTrait = [...s.revealed].reverse().find((k) => s.traits[k] > 0);
-    if (lastTrait) text(ctx, TRAIT_HINT[lastTrait], cx, cy + 61, { font: "small", color: COL.dim });
-    text(ctx, `DEMAND ${d.demanded.toLocaleString("en-US")}`, 12, 8, { font: "title", color: COL.gold });
-    text(ctx, d.banker ? "Final night" : `${clock(n.minutes)} · closes ${clock(s.closes)}`, 12, 26, { font: "small", color: COL.dim });
+    if (lastTrait) text(ctx, t(`hint.${lastTrait}` as Key), cx, r4 + lineHeight("small"), { font: "small", color: COL.dim });
+    text(ctx, t("duel.demand", { v: d.demanded.toLocaleString("en-US") }), 12, 8, { font: "title", color: COL.gold });
+    text(ctx, d.banker ? t("duel.final") : t("duel.time", { t: clock(n.minutes), c: clock(s.closes) }), 12, 8 + lineHeight("title"), { font: "small", color: COL.dim });
     ctx.globalAlpha = 1;
 
     // subtitle
@@ -599,16 +604,16 @@ export class DuelScene implements Scene {
     const n = this.night, d = this.d;
     const y0 = 276;
     if (this.phase === "opening") {
-      text(ctx, "HOW MUCH DO YOU ASK FOR?", W / 2, y0 - 6, { font: "small", color: COL.gold, align: "center" });
+      text(ctx, t("duel.ask"), W / 2, y0 - 6, { font: "small", color: COL.gold, align: "center" });
       const opts: [Opening, string, string][] = [
-        ["debt", `The debt: ${this.shop.debt}`, "You ask for the full debt."],
-        ["fee", `Late fee: ${Math.round((this.shop.debt * 1.25) / 10) * 10}`, "Resistance rises. Fear +2."],
-        ["half", `Half tonight: ${Math.round((this.shop.debt * 0.5) / 10) * 10}`, "The rest is a note. Grace +3."],
+        ["debt", t("open.debt", { v: this.shop.debt }), t("open.debt_sub")],
+        ["fee", t("open.fee", { v: Math.round((this.shop.debt * 1.25) / 10) * 10 }), t("open.fee_sub")],
+        ["half", t("open.half", { v: Math.round((this.shop.debt * 0.5) / 10) * 10 }), t("open.half_sub")],
       ];
       opts.forEach(([o, l, sub], i) => {
         if (button(ctx, `op${o}`, l, 20 + i * 204, y0 + 8, 196, 34, { key: String(i + 1), sub, accent: o === "fee" ? COL.crimson : o === "half" ? COL.teal : COL.gold })) this.chooseOpening(o);
       });
-      if (button(ctx, "opleave", "Leave", W - 90, y0 + 50, 70, 20, { key: "ESC" })) this.leave_();
+      if (button(ctx, "opleave", t("btn.leave"), W - 90, y0 + 50, 70, 20, { key: "ESC" })) this.leave_();
       return;
     }
     if (this.phase === "end" && this.outcome) {
@@ -619,50 +624,51 @@ export class DuelScene implements Scene {
       for (const l of o.lines) yy += para(ctx, l, 126, yy, 388, { color: COL.paper }) + 2;
       if (o.intel) {
         yy += 4;
-        text(ctx, o.intel.shopId === -1 ? "INTEL: THE BANKER" : "NEW INTEL", 126, yy, { font: "small", color: COL.violet });
+        text(ctx, o.intel.shopId === -1 ? t("out.banker_intel") : t("out.new_intel"), 126, yy, { font: "small", color: COL.violet });
         yy += 10;
-        para(ctx, o.intel.text, 126, yy, 388, { font: "small", color: o.intel.kind === "secret" ? COL.crimson : COL.teal });
+        para(ctx, intelText(o.intel, this.night), 126, yy, 388, { font: "small", color: o.intel.kind === "secret" ? COL.crimson : COL.teal });
       }
-      if (button(ctx, "exit", "Back to the street", W / 2 - 80, 318, 160, 20, { key: "E" })) this.exit();
+      if (button(ctx, "exit", t("btn.back_street"), W / 2 - 80, 318, 160, 20, { key: "E" })) this.exit();
       return;
     }
     const active = this.phase === "player";
     let hover: string | null = null;
-    TACTICS.forEach((t, i) => {
+    TACTICS.forEach((tac, i) => {
       const x = 8 + i * 89, w = 86;
       const hasSecret = intelFor(n, d).some((k) => k.kind === "secret");
-      const dis = !active || !this.canUse(t.id);
-      const accent = t.id === "press" || t.id === "leverage" ? COL.crimson : t.id === "improvise" ? COL.violet : t.id === "offer" || t.id === "charm" ? COL.teal : COL.gold;
-      const sub = t.id === "leverage" && !hasSecret ? "no secret" : t.id === "improvise" ? (ai.status === "online" ? "Jev judge" : "local judge") : `-${t.cost} comp.`;
-      if (button(ctx, `t${t.id}`, t.name, x, y0 + 4, w, 32, { key: String(i + 1), disabled: dis, accent, sub })) this.pick(t.id);
-      if (pointer.x >= x && pointer.x < x + w && pointer.y >= y0 + 4 && pointer.y < y0 + 36) hover = t.desc;
+      const dis = !active || !this.canUse(tac.id);
+      const accent = tac.id === "press" || tac.id === "leverage" ? COL.crimson : tac.id === "improvise" ? COL.violet : tac.id === "offer" || tac.id === "charm" ? COL.teal : COL.gold;
+      const sub = tac.id === "leverage" && !hasSecret ? t("tac.no_secret") : tac.id === "improvise" ? (ai.status === "online" ? t("tac.jev") : t("tac.local")) : t("tac.cost", { v: tac.cost });
+      if (button(ctx, `t${tac.id}`, t(`tac.${tac.id}` as Key), x, y0 + 4, w, 32, { key: String(i + 1), disabled: dis, accent, sub })) this.pick(tac.id);
+      if (pointer.x >= x && pointer.x < x + w && pointer.y >= y0 + 4 && pointer.y < y0 + 36) hover = t(`tac.${tac.id}.d` as Key);
     });
     if (hover && active) {
       panel(ctx, 100, y0 - 22, 440, 16, COL.line);
       text(ctx, hover, W / 2, y0 - 20, { font: "small", color: COL.paper, align: "center" });
     }
     const by = y0 + 44;
-    text(ctx, "COMPOSURE", 10, by, { font: "small", color: COL.dim });
-    bar(ctx, 72, by + 2, 90, 4, n.composure / n.maxComposure, COL.teal);
-    text(ctx, "HEAT", 10, by + 11, { font: "small", color: COL.dim });
-    bar(ctx, 72, by + 13, 90, 4, n.heat / 100, n.heat > 70 ? COL.red : "#e08a3c");
+    const bx = 10 + Math.max(measure(t("hud.composure"), "small"), measure(t("hud.heat"), "small")) + 6;
+    text(ctx, t("hud.composure"), 10, by, { font: "small", color: COL.dim });
+    bar(ctx, bx, by + 2, 84, 4, n.composure / n.maxComposure, COL.teal);
+    text(ctx, t("hud.heat"), 10, by + 11, { font: "small", color: COL.dim });
+    bar(ctx, bx, by + 13, 84, 4, n.heat / 100, n.heat > 70 ? COL.red : "#e08a3c");
     if (!d.banker) {
       if (d.offer !== null) {
-        if (button(ctx, "settle", `Settle for ${d.offer}`, 190, by - 2, 150, 22, { accent: COL.teal, disabled: !active, key: "S" })) this.settle();
-      } else text(ctx, "The debtor makes no offer yet.", 190, by + 4, { font: "small", color: "#6e6380" });
+        if (button(ctx, "settle", t("duel.settle", { v: d.offer }), 190, by - 2, 150, 22, { accent: COL.teal, disabled: !active, key: "S" })) this.settle();
+      } else text(ctx, t("duel.no_offer"), 190, by + 4, { font: "small", color: "#6e6380" });
     }
     if (active && input.pressed("down")) this.settle();
-    if (!d.banker && button(ctx, "leave", "Leave", W - 84, by - 2, 74, 22, { key: "ESC", disabled: !active })) this.leave_();
+    if (!d.banker && button(ctx, "leave", t("btn.leave"), W - 84, by - 2, 74, 22, { key: "ESC", disabled: !active })) this.leave_();
     if (!active && this.phase === "busy") {
       const dots = ".".repeat(1 + (Math.floor(time * 3) % 3));
       text(ctx, dots, W / 2, by + 4, { font: "bold", color: COL.dim, align: "center" });
     }
     if (this.phase === "typing") {
       panel(ctx, 60, 150, 520, 52, COL.violet, "rgba(20,10,30,0.96)");
-      text(ctx, "SAY IT YOUR WAY", 72, 156, { font: "small", color: COL.violet });
-      text(ctx, "The judge reads your tactic, the fit with this debtor, and any intel you use.", 72, 168, { font: "small", color: COL.dim });
+      text(ctx, t("say.title"), 72, 156, { font: "small", color: COL.violet });
+      text(ctx, t("say.body"), 72, 168, { font: "small", color: COL.dim });
       keycap(ctx, "ESC", 72, 184);
-      text(ctx, "Cancel", 96, 184, { font: "small", color: COL.dim });
+      text(ctx, t("say.cancel"), 96, 184, { font: "small", color: COL.dim });
     }
   }
 }

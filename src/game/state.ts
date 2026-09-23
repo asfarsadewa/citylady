@@ -1,5 +1,6 @@
 // Run state, seeded RNG, procedural district generation and save/load.
 import artmeta from "../data/artmeta.json";
+import { t, type Key, type Lang } from "../i18n";
 import { DISTRICTS, SHOP_TYPES, PORTRAITS, SECRETS, STASH_SPOTS, BANKER_SECRETS, TRAITS, type Trait, type Voice } from "./data";
 
 export function rng(seed: number) {
@@ -30,7 +31,8 @@ export type Rng = ReturnType<typeof rng>;
 export interface Intel {
   shopId: number; // -1 = the Banker
   kind: "secret" | "hardship" | "stash";
-  text: string;
+  /** banker secret index when shopId is -1; shop intel reads its phrase indices from the shop */
+  idx: number;
 }
 
 export interface Shop {
@@ -52,9 +54,13 @@ export interface Shop {
   width: number;
   status: "open" | "paid" | "partial" | "banned";
   collected: number;
+  /** English phrases for the AI judge; the indices select the localized phrase for display */
   secret: string;
   hardship: string;
   stash: string;
+  secretIdx: number;
+  hardshipIdx: number;
+  stashIdx: number;
   visits: number;
 }
 
@@ -81,7 +87,7 @@ export interface Night {
   intel: Intel[];
   x: number;
   notesPaid: number;
-  log: string[];
+  log: { key: Key; params: Record<string, string | number> }[];
 }
 
 export interface Run {
@@ -124,7 +130,7 @@ export function generateNight(run: Run): Night {
   const d = DISTRICTS[run.district];
   const seed = (run.seed + run.district * 7919) >>> 0;
   const r = rng(seed);
-  const types = r.shuffle(SHOP_TYPES.filter((t) => t.id !== "cabaret" || run.district >= 1));
+  const types = r.shuffle(SHOP_TYPES.filter((ty) => ty.id !== "cabaret" || run.district >= 1));
   const usedPortraits = new Set<string>();
   const shops: Shop[] = [];
   const fillers: Night["fillers"] = [];
@@ -133,8 +139,8 @@ export function generateNight(run: Run): Night {
   let x = 260;
   const n = d.shops;
   for (let i = 0; i < n; i++) {
-    const t = types[i % types.length];
-    const portrait = t.portraits.find((p) => !usedPortraits.has(p)) ?? r.pick(Object.keys(PORTRAITS).filter((p) => !usedPortraits.has(p)));
+    const st = types[i % types.length];
+    const portrait = st.portraits.find((p) => !usedPortraits.has(p)) ?? r.pick(Object.keys(PORTRAITS).filter((p) => !usedPortraits.has(p)));
     usedPortraits.add(portrait);
     const pd = PORTRAITS[portrait];
     const traits = { pride: 0, fear: 0, greed: 0, heart: 0, logic: 0 } as Record<Trait, number>;
@@ -143,19 +149,20 @@ export function generateNight(run: Run): Night {
     traits[minor] = 2;
     for (const k of TRAITS) {
       if (k !== major && k !== minor) traits[k] = r.chance(0.35) ? 1 : 0;
-      traits[k] = Math.min(3, traits[k] + ((t.bias[k] ?? 0) + (pd.bias[k] ?? 0) >= 2 && traits[k] < 2 ? 1 : 0));
+      traits[k] = Math.min(3, traits[k] + ((st.bias[k] ?? 0) + (pd.bias[k] ?? 0) >= 2 && traits[k] < 2 ? 1 : 0));
     }
     const debt = Math.round((r.int(140, 340) * d.debtScale) / 10) * 10;
     const cashRatio = r.chance(0.25) ? r.next() * 0.4 + 0.45 : r.next() * 0.7 + 1.0;
-    const late = t.late || r.chance(0.18);
-    const sw = spriteW(t.sprite, SHOP_W) + 6;
+    const late = st.late || r.chance(0.18);
+    const sw = spriteW(st.sprite, SHOP_W) + 6;
+    const secretIdx = r.int(0, SECRETS.length - 1), hardshipIdx = r.int(0, st.hardship.length - 1), stashIdx = r.int(0, STASH_SPOTS.length - 1);
     const early = !late && r.chance(0.22);
     shops.push({
       id: i,
-      type: t.id,
-      label: t.label,
-      name: r.pick(t.names),
-      sprite: t.sprite,
+      type: st.id,
+      label: st.label,
+      name: r.pick(st.names),
+      sprite: st.sprite,
       owner: r.pick(pd.names),
       portrait,
       voice: pd.voice,
@@ -169,9 +176,12 @@ export function generateNight(run: Run): Night {
       width: sw,
       status: "open",
       collected: 0,
-      secret: r.pick(SECRETS),
-      hardship: r.pick(t.hardship),
-      stash: r.pick(STASH_SPOTS),
+      secret: SECRETS[secretIdx],
+      hardship: st.hardship[hardshipIdx],
+      stash: STASH_SPOTS[stashIdx],
+      secretIdx,
+      hardshipIdx,
+      stashIdx,
       visits: 0,
     });
     lamps.push(x - 6);
@@ -205,8 +215,8 @@ export function generateNight(run: Run): Night {
   for (const note of run.notes) {
     if (r.chance(note.reliability)) {
       night.notesPaid += note.amount;
-      night.log.push(`${note.from} paid a note of ${note.amount}.`);
-    } else night.log.push(`${note.from} did not pay a note of ${note.amount}.`);
+      night.log.push({ key: "log.note_paid", params: { name: note.from, v: note.amount } });
+    } else night.log.push({ key: "log.note_default", params: { name: note.from, v: note.amount } });
   }
   run.notes = [];
   if (has(run, "informant")) {
@@ -216,26 +226,32 @@ export function generateNight(run: Run): Night {
 }
 
 export function makeIntel(s: Shop, kind: Intel["kind"]): Intel {
-  const text =
-    kind === "secret" ? `${s.owner} ${s.secret}.` :
-    kind === "hardship" ? `At ${s.name}, ${s.hardship}.` :
-    `${s.owner} keeps extra cash in a ${s.stash}.`;
-  return { shopId: s.id, kind, text };
+  return { shopId: s.id, kind, idx: 0 };
+}
+
+/** The intel sentence in a language (the AI judge always reads English). */
+export function intelText(it: Intel, night: Night, l?: Lang): string {
+  if (it.shopId === -1) return t(`banker.${it.idx}` as Key, undefined, l);
+  const s = night.shops[it.shopId];
+  if (!s) return "";
+  if (it.kind === "secret") return t("intel.secret", { owner: s.owner, secret: t(`secret.${s.secretIdx}` as Key, undefined, l) }, l);
+  if (it.kind === "hardship") return t("intel.hardship", { shop: s.name, hardship: t(`hard.${s.type}.${s.hardshipIdx}` as Key, undefined, l) }, l);
+  return t("intel.stash", { owner: s.owner, spot: t(`stash.${s.stashIdx}` as Key, undefined, l) }, l);
 }
 
 /** Gossip a paid debtor shares about someone else; may be about the Banker late in the game. */
 export function gossip(run: Run, night: Night, from: Shop, r: Rng): Intel | null {
   if (run.district >= 7 && run.bankerIntel.length < BANKER_SECRETS.length && r.chance(0.45)) {
-    const text = BANKER_SECRETS[run.bankerIntel.length];
-    run.bankerIntel.push(text);
-    return { shopId: -1, kind: "secret", text: text.charAt(0).toUpperCase() + text.slice(1) + "." };
+    const idx = run.bankerIntel.length;
+    run.bankerIntel.push(BANKER_SECRETS[idx]);
+    return { shopId: -1, kind: "secret", idx };
   }
   const targets = night.shops.filter((s) => s.id !== from.id && s.status === "open");
   if (!targets.length) return null;
-  for (const t of r.shuffle(targets)) {
-    const kinds = (["secret", "hardship", "stash"] as const).filter((k) => !night.intel.some((i) => i.shopId === t.id && i.kind === k));
+  for (const target of r.shuffle(targets)) {
+    const kinds = (["secret", "hardship", "stash"] as const).filter((k) => !night.intel.some((i) => i.shopId === target.id && i.kind === k));
     if (kinds.length) {
-      const it = makeIntel(t, r.pick([...kinds]));
+      const it = makeIntel(target, r.pick([...kinds]));
       night.intel.push(it);
       return it;
     }

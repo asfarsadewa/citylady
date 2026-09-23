@@ -5,8 +5,10 @@
   "compatibility_date": "2026-09-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     "not_found_handling": "single-page-application",
-    "run_worker_first": ["/api/*"]
+    // the page itself goes through the worker so share-card URLs become absolute
+    "run_worker_first": ["/api/*", "/", "/index.html"]
   },
   // Production: copy this file to wrangler.production.jsonc (gitignored), add your custom domain
   // "routes": [{ "pattern": "game.example.com", "custom_domain": true }] and your Turnstile site key.

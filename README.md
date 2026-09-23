@@ -20,6 +20,15 @@ A pixel art noir game. Vela collects debts across ten districts of a night city.
 - Fear and grace change how debtors react. They also decide the ending.
 - The surplus buys perks between nights.
 
+## Languages
+
+The game has English, Bahasa Indonesia and Simplified Chinese. English is the default. Press L on the title screen to change the language. The game saves the choice.
+
+- `src/i18n/en.ts` is the source. The Indonesian and Chinese tables must have every English key. The typecheck fails if a key is missing.
+- Subtitles for the voiced lines are in `src/i18n/voice.id.ts` and `src/i18n/voice.zh.ts`. The voices stay in English.
+- Chinese text uses Fusion Pixel (OFL). After you change the Chinese copy, run `python tools/subset_fonts.py` to rebuild the font subset.
+- Shop names and debtor names stay in English. They are proper names on painted signs.
+
 ## AI judge
 
 The worker asks TypeSafe Jev for typed judgments:

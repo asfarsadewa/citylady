@@ -6,9 +6,9 @@ import { WeatherFx } from "../game/weather";
 import type { Weather } from "../game/data";
 import { COL, letterbox, vignette, grain } from "../ui/widgets";
 import voiceData from "../data/voice.json";
+import { t, sub } from "../i18n";
 
 const VOICE = voiceData as Record<string, { s: string; t: string }>;
-const NAMES: Record<string, string> = { vela: "Vela", banker: "Madame Hale" };
 
 export interface Shot {
   img: string;
@@ -109,11 +109,11 @@ export class CinematicScene implements Scene {
       const v = VOICE[s.line];
       const a = Math.min(1, this.t * 4, (this.dur - this.t) * 3);
       ctx.globalAlpha = Math.max(0, a);
-      text(ctx, (NAMES[v.s] ?? v.s).toUpperCase(), W / 2, H - 36, { font: "small", color: v.s === "vela" ? COL.crimson : COL.gold, align: "center" });
-      para(ctx, v.t, 110, H - 26, 420, { chars: Math.floor(this.t * 45), color: COL.paper, align: "center" });
+      text(ctx, (v.s === "vela" ? t("name.vela") : t("name.hale")).toUpperCase(), W / 2, H - 36, { font: "small", color: v.s === "vela" ? COL.crimson : COL.gold, align: "center" });
+      para(ctx, sub(s.line), 110, H - 26, 420, { chars: Math.floor(this.t * 45), color: COL.paper, align: "center" });
       ctx.globalAlpha = 1;
     }
-    text(ctx, "Skip: ESC", W - 8, 6, { font: "small", color: "#6e6380", align: "right" });
+    text(ctx, t("cine.skip"), W - 8, 6, { font: "small", color: "#6e6380", align: "right" });
     grain(ctx, 0.07);
   }
 }

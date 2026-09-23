@@ -1,11 +1,12 @@
 // End credits: Vela walks through all ten districts at dawn while the credits roll to "Lampu Kota".
 import { W, H, img, input, pointer, type Scene } from "../engine/core";
 import { audio } from "../engine/audio";
-import { text } from "../engine/text";
+import { text, lineHeight } from "../engine/text";
 import { DISTRICTS } from "../game/data";
 import { Vela } from "../game/vela";
 import { WeatherFx } from "../game/weather";
 import { COL, letterbox, vignette, grain } from "../ui/widgets";
+import { t, type Key } from "../i18n";
 
 type Line =
   | { kind: "head"; text: string }
@@ -14,54 +15,51 @@ type Line =
   | { kind: "gap"; size: number }
   | { kind: "title"; text: string; sub: string };
 
-const CAST: [string, string][] = [
-  ["d_banker", "Madame Hale, the Lantern Bank"], ["d_baker", "The baker"], ["d_tailor", "The tailor"], ["d_chef", "The noodle chef"],
-  ["d_pawn", "The pawnbroker"], ["d_florist", "The florist"], ["d_books", "The bookseller"], ["d_apothecary", "The apothecary"],
-  ["d_jeweler", "The jeweler"], ["d_teahouse", "The tea house matron"], ["d_records", "The record dealer"], ["d_barber", "The barber"],
-  ["d_fish", "The fishmonger"], ["d_clock", "The clockmaker"], ["d_cabaret", "The cabaret owner"], ["d_mechanic", "The mechanic"],
-  ["d_father", "The young father"],
-];
+const CAST = ["d_banker", "d_baker", "d_tailor", "d_chef", "d_pawn", "d_florist", "d_books", "d_apothecary", "d_jeweler",
+  "d_teahouse", "d_records", "d_barber", "d_fish", "d_clock", "d_cabaret", "d_mechanic", "d_father"];
 
 function roll(ending: string): Line[] {
   const L: Line[] = [
     { kind: "title", text: "CITY LADY", sub: ending },
     { kind: "gap", size: 40 },
-    { kind: "head", text: "VELA VALE" },
-    { kind: "item", label: "Voice", value: "Gemini TTS, Despina" },
+    { kind: "head", text: t("name.vela").toUpperCase() },
+    { kind: "item", label: t("cr.voice"), value: "Gemini TTS, Despina" },
     { kind: "gap", size: 16 },
-    { kind: "head", text: "CAST" },
-    ...CAST.map(([portrait, role]) => ({ kind: "cast" as const, portrait, role })),
+    { kind: "head", text: t("cr.cast") },
+    ...CAST.map((portrait) => ({ kind: "cast" as const, portrait, role: t(`role.${portrait}` as Key) })),
     { kind: "gap", size: 16 },
-    { kind: "head", text: "ART" },
-    { kind: "item", label: "Districts, shops, portraits", value: "Qwen-Image 2.1" },
-    { kind: "item", label: "Vela and the crowd", value: "GPT Image 2.5 Sunburst" },
-    { kind: "item", label: "Pixel pass", value: "Palette quantization" },
+    { kind: "head", text: t("cr.art") },
+    { kind: "item", label: t("cr.art.world"), value: "Qwen-Image 2.1" },
+    { kind: "item", label: t("cr.art.sprites"), value: "GPT Image 2.5 Sunburst" },
+    { kind: "item", label: t("cr.art.pixel"), value: t("cr.art.pixel.v") },
     { kind: "gap", size: 16 },
-    { kind: "head", text: "MUSIC" },
+    { kind: "head", text: t("cr.music") },
     { kind: "item", label: "City Lady", value: "YuE2" },
     { kind: "item", label: "Night Walk", value: "YuE2" },
     { kind: "item", label: "The Ledger", value: "YuE2" },
     { kind: "item", label: "Dawn", value: "YuE2" },
     { kind: "item", label: "Lampu Kota", value: "YuE2" },
     { kind: "gap", size: 16 },
-    { kind: "head", text: "SOUND AND VOICES" },
-    { kind: "item", label: "Sound effects", value: "ElevenLabs" },
-    { kind: "item", label: "Voices", value: "Gemini TTS" },
+    { kind: "head", text: t("cr.sound") },
+    { kind: "item", label: t("cr.sfx"), value: "ElevenLabs" },
+    { kind: "item", label: t("cr.voices"), value: "Gemini TTS" },
     { kind: "gap", size: 16 },
-    { kind: "head", text: "AI JUDGE" },
-    { kind: "item", label: "Debtor decisions", value: "TypeSafe Jev" },
+    { kind: "head", text: t("cr.ai") },
+    { kind: "item", label: t("cr.ai.v"), value: "TypeSafe Jev" },
     { kind: "gap", size: 16 },
-    { kind: "head", text: "ENGINE" },
-    { kind: "item", label: "Code", value: "TypeScript, Canvas, WebGL" },
-    { kind: "item", label: "Hosting", value: "Cloudflare Workers" },
-    { kind: "item", label: "Fonts", value: "Pixelify Sans, Jersey 10, Tiny5" },
+    { kind: "head", text: t("cr.engine") },
+    { kind: "item", label: t("cr.code"), value: "TypeScript, Canvas, WebGL" },
+    { kind: "item", label: t("cr.hosting"), value: "Cloudflare Workers" },
+    { kind: "item", label: t("cr.fonts"), value: "Pixelify Sans, Jersey 10, Tiny5, Fusion Pixel" },
     { kind: "gap", size: 70 },
-    { kind: "title", text: "THANK YOU", sub: "for playing" },
+    { kind: "title", text: t("cr.thanks"), sub: t("cr.thanks.sub") },
   ];
   return L;
 }
 
-const HEIGHT: Record<Line["kind"], number> = { head: 20, item: 14, cast: 34, gap: 0, title: 62 };
+// row heights follow the active font metrics, so taller CJK glyphs get room
+const height = (k: Line["kind"]) =>
+  k === "head" ? lineHeight("title") + 4 : k === "item" ? lineHeight("body") + 2 : k === "cast" ? 34 : k === "title" ? 62 : 0;
 
 export class CreditsScene implements Scene {
   private t = 0;
@@ -74,7 +72,7 @@ export class CreditsScene implements Scene {
 
   constructor(ending: string, private onDone: () => void) {
     this.lines = roll(ending);
-    this.total = this.lines.reduce((s, l) => s + (l.kind === "gap" ? l.size : HEIGHT[l.kind]), 0);
+    this.total = this.lines.reduce((s, l) => s + (l.kind === "gap" ? l.size : height(l.kind)), 0);
     this.vela.wind = 0.9;
   }
 
@@ -113,7 +111,7 @@ export class CreditsScene implements Scene {
     };
     drawSky(i, k, 1);
     if (k > 0.8) drawSky((i + 1) % DISTRICTS.length, 0, (k - 0.8) / 0.2);
-    const name = DISTRICTS[i].name.toUpperCase();
+    const name = t(`district.${DISTRICTS[i].id}` as Key).toUpperCase();
     text(ctx, name, 26, H - 52, { font: "small", color: COL.gold, alpha: Math.min(1, k * 6, (1 - k) * 6) });
     // ground and Vela
     ctx.fillStyle = "rgba(6,4,12,0.85)";
@@ -131,12 +129,12 @@ export class CreditsScene implements Scene {
     const cx = 470;
     let y = -this.scroll;
     for (const l of this.lines) {
-      const h = l.kind === "gap" ? l.size : HEIGHT[l.kind];
+      const h = l.kind === "gap" ? l.size : height(l.kind);
       if (y > -70 && y < H + 10) {
         const fade = Math.min(1, (y + 40) / 60, (H - 50 - y) / 60);
         if (fade > 0) {
           if (l.kind === "title") {
-            text(ctx, l.text, cx, y, { font: "big", color: COL.paper, align: "center", alpha: fade });
+            text(ctx, l.text, cx, y, { font: l.text === "CITY LADY" ? "logo" : "big", color: COL.paper, align: "center", alpha: fade });
             text(ctx, l.sub.toUpperCase(), cx, y + 46, { font: "small", color: COL.gold, align: "center", alpha: fade });
           } else if (l.kind === "head") {
             text(ctx, l.text, cx, y + 4, { font: "title", color: COL.crimson, align: "center", alpha: fade });

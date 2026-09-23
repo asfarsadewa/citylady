@@ -3,15 +3,6 @@
 export type Weather = "clear" | "rain" | "snow" | "lanterns" | "steam" | "wind" | "embers";
 export type Trait = "pride" | "fear" | "greed" | "heart" | "logic";
 export const TRAITS: Trait[] = ["pride", "fear", "greed", "heart", "logic"];
-export const TRAIT_LABEL: Record<Trait, string> = { pride: "Proud", fear: "Fearful", greed: "Greedy", heart: "Soft-hearted", logic: "Rational" };
-export const TRAIT_HINT: Record<Trait, string> = {
-  pride: "Charm works. Pressure makes this debtor angry.",
-  fear: "Pressure works well.",
-  greed: "Offers work well.",
-  heart: "Charm and hardship stories work well.",
-  logic: "Reason works well.",
-};
-
 export interface District {
   id: string;
   name: string;
@@ -111,20 +102,19 @@ export const BANKER_SECRETS = [
   "Hale erased her own brother's debts and then his name",
 ];
 
+/** names and descriptions live in the i18n tables as perk.<id> and perk.<id>.d */
 export interface Perk {
   id: string;
-  name: string;
-  desc: string;
   cost: number;
 }
 
 export const PERKS: Perk[] = [
-  { id: "silk", name: "Silk gloves", desc: "Charm is 30% stronger.", cost: 400 },
-  { id: "stare", name: "Cold stare", desc: "Pressure causes 40% less anger.", cost: 450 },
-  { id: "lipstick", name: "Red lipstick", desc: "You get 30 more composure each night.", cost: 400 },
-  { id: "eye", name: "Accountant's eye", desc: "You see the cash in each shop.", cost: 350 },
-  { id: "watch", name: "Pocket watch", desc: "Each night is 45 minutes longer.", cost: 500 },
-  { id: "informant", name: "Informant", desc: "You start each night with 2 intel cards.", cost: 600 },
-  { id: "card", name: "Lawyer's card", desc: "Reason is 30% stronger. Heat falls faster.", cost: 450 },
-  { id: "velvet", name: "Velvet voice", desc: "Your own lines are 25% stronger.", cost: 500 },
+  { id: "silk", cost: 400 },
+  { id: "stare", cost: 450 },
+  { id: "lipstick", cost: 400 },
+  { id: "eye", cost: 350 },
+  { id: "watch", cost: 500 },
+  { id: "informant", cost: 600 },
+  { id: "card", cost: 450 },
+  { id: "velvet", cost: 500 },
 ];

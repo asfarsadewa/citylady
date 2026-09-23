@@ -20,7 +20,7 @@ export const pointer = { x: -1, y: -1, down: false, clicked: false, moved: false
 const KEYMAP: Record<string, string> = {
   ArrowLeft: "left", KeyA: "left", ArrowRight: "right", KeyD: "right", ArrowUp: "up", KeyW: "up",
   ArrowDown: "down", KeyS: "down", Enter: "ok", Space: "ok", KeyE: "ok", Escape: "back", Backspace: "back",
-  Tab: "ledger", KeyL: "ledger", ShiftLeft: "run", ShiftRight: "run", KeyM: "mute", KeyV: "analog",
+  Tab: "ledger", KeyL: "lang", ShiftLeft: "run", ShiftRight: "run", KeyM: "mute", KeyV: "analog",
   Digit1: "1", Digit2: "2", Digit3: "3", Digit4: "4", Digit5: "5", Digit6: "6", Digit7: "7", Digit8: "8",
 };
 

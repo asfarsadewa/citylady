@@ -1,7 +1,7 @@
 // Scene routing for a run: intro, districts, duels, the ledger between nights, finale, endings.
 import { go } from "../engine/core";
 import { audio } from "../engine/audio";
-import { DISTRICTS } from "../game/data";
+import { DISTRICTS, BANKER_SECRETS } from "../game/data";
 import { generateNight, newRun, save, load, clearSave, type Run, type Night, type Shop } from "../game/state";
 import { CinematicScene, type Shot } from "./cinematic";
 import { StreetScene } from "./street";
@@ -9,6 +9,7 @@ import { DuelScene } from "./duel";
 import { NightEndScene } from "./nightend";
 import { TitleScene } from "./title";
 import { CreditsScene } from "./credits";
+import { t, type Key } from "../i18n";
 
 let street: StreetScene | null = null;
 
@@ -44,9 +45,9 @@ export function startDistrict(run: Run) {
   run.night = night;
   const d = DISTRICTS[run.district];
   street = new StreetScene(run, night);
-  for (const l of night.log) street.toast(l, "#5ad1c8");
+  for (const l of night.log) street.toast(t(l.key, l.params), "#5ad1c8");
   const shots: Shot[] = [
-    { img: d.sky, from: [-1, -0.2, 1.0], to: [-0.4, 0, 1.0], title: d.name.toUpperCase(), sub: `NIGHT ${run.district + 1} · QUOTA ${night.quota}`, dur: 4, weather: d.weather, sfx: "bell_toll" },
+    { img: d.sky, from: [-1, -0.2, 1.0], to: [-0.4, 0, 1.0], title: t(`district.${d.id}` as Key).toUpperCase(), sub: t("intro.night", { n: run.district + 1, q: night.quota }), dur: 4, weather: d.weather, sfx: "bell_toll" },
     { img: d.sky, from: [-0.4, 0, 1.0], to: [0.4, 0.2, 1.12], line: `d${run.district + 1}`, weather: d.weather },
   ];
   const s = street;
@@ -67,16 +68,16 @@ export function toNightEnd(run: Run) {
 
 export function toFinale(run: Run) {
   const banker: Shop = {
-    id: -1, type: "bank", label: "Bank", name: "The Lantern Bank", sprite: "shop_bank", owner: "Madame Hale",
+    id: -1, type: "bank", label: "Bank", name: "The Lantern Bank", sprite: "shop_bank", owner: t("name.hale"),
     portrait: "d_banker", voice: "banker",
     traits: { pride: 3, fear: 0, greed: 2, heart: 0, logic: 3 }, revealed: [],
     debt: 100000, cash: 100000, opens: 0, closes: 9999, x: 0, width: 0, status: "open", collected: 0,
-    secret: "", hardship: "", stash: "", visits: 1,
+    secret: "", hardship: "", stash: "", secretIdx: 0, hardshipIdx: 0, stashIdx: 0, visits: 1,
   };
   const night = run.night!;
   // intel about the banker is carried as shopId -1
   night.intel = night.intel.filter((i) => i.shopId !== -1);
-  for (const b of run.bankerIntel) night.intel.push({ shopId: -1, kind: "secret", text: b });
+  for (const b of run.bankerIntel) night.intel.push({ shopId: -1, kind: "secret", idx: Math.max(0, BANKER_SECRETS.indexOf(b)) });
   night.composure = night.maxComposure;
   const shots: Shot[] = [
     { img: "cine_hall", from: [0, 0.6, 1.0], to: [0, -0.2, 1.35], dur: 6, weather: "embers", sfx: "braam" },
@@ -98,10 +99,10 @@ export function toEnding(kind: "grace" | "fear" | "fail") {
           ]
         : [
             { img: "cine_fail", from: [0, 0, 1.25], to: [0, 0.2, 1.05], line: "end_fail_1", weather: "rain", dur: 6 },
-            { img: "cine_fail", from: [0, 0.2, 1.05], to: [0, 0.3, 1.1], title: "GREY DAWN", sub: "THE LEDGER IS SHORT", weather: "rain", dur: 5 },
+            { img: "cine_fail", from: [0, 0.2, 1.05], to: [0, 0.3, 1.1], title: t("fail.title"), sub: t("fail.sub"), weather: "rain", dur: 5 },
           ];
   if (kind !== "fail") clearSave();
-  const credits = () => go(new CreditsScene(kind === "grace" ? "Ending: Dawn" : "Ending: The Chair", toTitle), 0.8);
+  const credits = () => go(new CreditsScene(kind === "grace" ? t("cr.ending_dawn") : t("cr.ending_chair"), toTitle), 0.8);
   go(new CinematicScene(shots, () => (kind === "fail" ? retryNight() : credits()), kind === "fail" ? null : "mus_dawn"), 0.8);
   if (kind === "fail") audio.playMusic(null);
 }

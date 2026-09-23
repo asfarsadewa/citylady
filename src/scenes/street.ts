@@ -1,9 +1,9 @@
 // The district street: walk, read shopfronts, rest on benches, open the ledger, enter shops.
 import { W, H, img, input, pointer, hit, kick, clamp, time, type Scene } from "../engine/core";
 import { audio } from "../engine/audio";
-import { text, para, measure } from "../engine/text";
-import { DISTRICTS, TRAIT_LABEL, type District } from "../game/data";
-import { clock, gossip, has, rng, type Night, type Run, type Shop } from "../game/state";
+import { text, para, measure, lineHeight } from "../engine/text";
+import { DISTRICTS, BANKER_SECRETS, type District } from "../game/data";
+import { clock, gossip, has, intelText, rng, type Night, type Run, type Shop } from "../game/state";
 import { Vela } from "../game/vela";
 import { WeatherFx } from "../game/weather";
 import { CityLife } from "../game/citylife";
@@ -12,6 +12,7 @@ import { COL, panel, bar, keycap, button, vignette, grain } from "../ui/widgets"
 import { ai } from "../game/ai";
 import artmeta from "../data/artmeta.json";
 import * as flow from "./flow";
+import { t, type Key } from "../i18n";
 
 const GROUND = 300; // facade baseline
 const FEET = 314;
@@ -179,17 +180,17 @@ export class StreetScene implements Scene {
     // grade the facade into the district's light
     const tmp = document.createElement("canvas");
     tmp.width = dw; tmp.height = dh;
-    const t = tmp.getContext("2d")!;
-    t.imageSmoothingEnabled = false;
-    t.drawImage(im, 0, 0, dw, dh);
-    t.globalCompositeOperation = "multiply";
-    t.fillStyle = this.d.tint;
-    t.fillRect(0, 0, dw, dh);
-    t.globalCompositeOperation = "destination-in";
-    t.drawImage(im, 0, 0, dw, dh);
-    t.globalCompositeOperation = "source-over";
+    const g2 = tmp.getContext("2d")!;
+    g2.imageSmoothingEnabled = false;
+    g2.drawImage(im, 0, 0, dw, dh);
+    g2.globalCompositeOperation = "multiply";
+    g2.fillStyle = this.d.tint;
+    g2.fillRect(0, 0, dw, dh);
+    g2.globalCompositeOperation = "destination-in";
+    g2.drawImage(im, 0, 0, dw, dh);
+    g2.globalCompositeOperation = "source-over";
     if (shop) {
-      this.sign(t, shop, meta?.sign ? meta.sign.map((v) => v * scale) : null, dw, dh);
+      this.sign(g2, shop, meta?.sign ? meta.sign.map((v) => v * scale) : null, dw, dh);
       const sil = document.createElement("canvas");
       sil.width = dw; sil.height = dh;
       const sg = sil.getContext("2d")!;
@@ -202,22 +203,22 @@ export class StreetScene implements Scene {
     c.drawImage(tmp, x, y);
   }
 
-  private sign(t: CanvasRenderingContext2D, s: Shop, rect: number[] | null, dw: number, dh: number) {
+  private sign(g2: CanvasRenderingContext2D, s: Shop, rect: number[] | null, dw: number, dh: number) {
     const name = s.name;
     if (rect && rect[2] > 40) {
       const [sx, sy, sw, sh] = rect;
       const font = measure(name, "title") < sw - 8 && sh >= 18 ? "title" : "bold";
       const fh = font === "title" ? 16 : 11;
-      text(t, name, sx + sw / 2, sy + (sh - fh) / 2, { font, color: "#3b2216", align: "center", shadow: "rgba(255,240,210,0.35)" });
+      text(g2, name, sx + sw / 2, sy + (sh - fh) / 2, { font, color: "#3b2216", align: "center", shadow: "rgba(255,240,210,0.35)" });
     } else {
       const w = measure(name, "bold") + 14;
       const x = Math.round((dw - w) / 2), y = Math.round(dh * 0.4);
-      t.fillStyle = "#120c18";
-      t.fillRect(x, y, w, 15);
-      t.fillStyle = this.d.glow;
-      t.fillRect(x, y, w, 1);
-      t.fillRect(x, y + 14, w, 1);
-      text(t, name, dw / 2, y + 2, { font: "bold", color: this.d.glow, align: "center", shadow: null });
+      g2.fillStyle = "#120c18";
+      g2.fillRect(x, y, w, 15);
+      g2.fillStyle = this.d.glow;
+      g2.fillRect(x, y, w, 1);
+      g2.fillRect(x, y + 14, w, 1);
+      text(g2, name, dw / 2, y + 2, { font: "bold", color: this.d.glow, align: "center", shadow: null });
     }
   }
 
@@ -234,8 +235,8 @@ export class StreetScene implements Scene {
 
   update(dt: number) {
     const n = this.night;
-    for (const t of this.toasts) t.t += dt;
-    this.toasts = this.toasts.filter((t) => t.t < 4.5);
+    for (const toast of this.toasts) toast.t += dt;
+    this.toasts = this.toasts.filter((toast) => toast.t < 4.5);
     if (this.entering) {
       this.enterT += dt;
       this.vela.alpha = Math.max(0, 1 - Math.max(0, this.enterT - 0.35) * 2.5);
@@ -307,7 +308,7 @@ export class StreetScene implements Scene {
       n.minutes += 60;
       audio.sfx("whistle");
       kick(4);
-      this.toast("A patrol stops you. You lose one hour.", COL.red);
+      this.toast(t("toast.patrol"), COL.red);
     }
     if (n.minutes >= n.endMinutes) {
       n.minutes = n.endMinutes;
@@ -318,12 +319,12 @@ export class StreetScene implements Scene {
 
   private tryEnter(s: Shop) {
     const n = this.night;
-    if (s.status === "paid") return this.toast(`${s.owner} has paid tonight.`, COL.dim);
-    if (s.status === "banned") return this.toast(`${s.owner} will not let you in tonight.`, COL.red);
-    if (s.status === "partial") return this.toast(`${s.owner} gave a part. Come back next night.`, COL.dim);
+    if (s.status === "paid") return this.toast(t("toast.paid", { owner: s.owner }), COL.dim);
+    if (s.status === "banned") return this.toast(t("toast.banned", { owner: s.owner }), COL.red);
+    if (s.status === "partial") return this.toast(t("toast.partial", { owner: s.owner }), COL.dim);
     if (!shopOpen(s, n.minutes)) {
       audio.sfx("ui_back");
-      return this.toast(n.minutes < s.opens ? `${s.name} opens at ${clock(s.opens)}.` : `${s.name} is closed.`, COL.dim);
+      return this.toast(n.minutes < s.opens ? t("toast.opens", { shop: s.name, t: clock(s.opens) }) : t("toast.closed", { shop: s.name }), COL.dim);
     }
     this.entering = s;
     this.enterT = 0;
@@ -339,14 +340,14 @@ export class StreetScene implements Scene {
     n.minutes += 30;
     n.composure = Math.min(n.maxComposure, n.composure + 35);
     audio.sfx("cloth", { vol: 0.5 });
-    this.toast("You rest for 30 minutes. Composure +35.", COL.teal);
+    this.toast(t("toast.rest"), COL.teal);
     if (this.r.chance(0.55)) {
       const any = n.shops.find((s) => s.status === "open");
       if (any) {
         const it = gossip(this.run, n, any, this.r);
         if (it) {
           audio.sfx("paper", { vol: 0.7 });
-          this.toast(`You overhear: ${it.text}`, COL.gold);
+          this.toast(t("toast.overhear", { text: intelText(it, n) }), COL.gold);
         }
       }
     }
@@ -451,12 +452,13 @@ export class StreetScene implements Scene {
     this.drawHud(ctx);
     if (this.ledgerOpen) this.drawLedger(ctx);
     // toasts
-    this.toasts.slice(-3).forEach((t, i) => {
-      const a = Math.min(1, t.t * 5, (4.5 - t.t) * 2);
-      const w = Math.min(460, measure(t.text) + 20);
+    this.toasts.slice(-3).forEach((toast, i) => {
+      const a = Math.min(1, toast.t * 5, (4.5 - toast.t) * 2);
+      const w = Math.min(460, measure(toast.text) + 20);
       ctx.globalAlpha = a;
-      panel(ctx, (W - w) / 2, 44 + i * 20, w, 17, t.color);
-      text(ctx, t.text, W / 2, 47 + i * 20, { color: t.color, align: "center" });
+      const ty = 18 + lineHeight("title") + i * (lineHeight("body") + 7);
+      panel(ctx, (W - w) / 2, ty, w, lineHeight("body") + 4, toast.color);
+      text(ctx, toast.text, W / 2, ty + 3, { color: toast.color, align: "center" });
       ctx.globalAlpha = 1;
     });
     if (this.resting > 0) {
@@ -473,10 +475,10 @@ export class StreetScene implements Scene {
       if (x < -60 || x > W + 60) continue;
       const open = shopOpen(s, n.minutes);
       const y = 70 + Math.round(Math.sin(time * 2 + s.id) * 2);
-      if (s.status === "paid") text(ctx, "PAID", x, y, { font: "title", color: COL.green, align: "center" });
-      else if (s.status === "banned") text(ctx, "BANNED", x, y, { font: "title", color: COL.red, align: "center" });
-      else if (s.status === "partial") text(ctx, "PART PAID", x, y, { font: "title", color: COL.teal, align: "center" });
-      else if (!open) text(ctx, n.minutes < s.opens ? `OPENS ${clock(s.opens)}` : "CLOSED", x, y, { font: "small", color: COL.dim, align: "center" });
+      if (s.status === "paid") text(ctx, t("mark.paid"), x, y, { font: "title", color: COL.green, align: "center" });
+      else if (s.status === "banned") text(ctx, t("mark.banned"), x, y, { font: "title", color: COL.red, align: "center" });
+      else if (s.status === "partial") text(ctx, t("mark.partial"), x, y, { font: "title", color: COL.teal, align: "center" });
+      else if (!open) text(ctx, n.minutes < s.opens ? t("mark.opens", { t: clock(s.opens) }) : t("mark.closed"), x, y, { font: "small", color: COL.dim, align: "center" });
       else {
         ctx.fillStyle = COL.gold;
         const b = Math.round(Math.sin(time * 4) * 1.5);
@@ -490,8 +492,8 @@ export class StreetScene implements Scene {
       const x = Math.round(bench - cam);
       panel(ctx, x - 90, 238, 180, 26, COL.teal);
       keycap(ctx, "E", x - 84, 247);
-      text(ctx, "Rest: 30 min", x - 70, 241, { color: COL.teal });
-      text(ctx, "Composure +35. You can hear gossip.", x - 70, 252, { font: "small", color: COL.dim });
+      text(ctx, t("bench.title"), x - 70, 241, { color: COL.teal });
+      text(ctx, t("bench.body"), x - 70, 252, { font: "small", color: COL.dim });
     }
   }
 
@@ -502,17 +504,17 @@ export class StreetScene implements Scene {
     const y = 150;
     panel(ctx, cx, y, w, h, COL.gold);
     text(ctx, s.name, cx + 8, y + 5, { font: "bold", color: COL.gold });
-    text(ctx, `${s.owner} · ${s.label}`, cx + 8, y + 18, { font: "small", color: COL.dim });
-    text(ctx, `Debt ${s.debt}`, cx + 8, y + 29, { color: COL.paper });
-    if (has(this.run, "eye")) text(ctx, `Cash ${s.cash}`, cx + w - 8, y + 29, { color: COL.teal, align: "right" });
-    const hours = shopOpen(s, n.minutes) ? `Open until ${clock(s.closes)}` : n.minutes < s.opens ? `Opens at ${clock(s.opens)}` : "Closed";
+    text(ctx, `${s.owner} · ${t(`shop.${s.type}` as Key)}`, cx + 8, y + 18, { font: "small", color: COL.dim });
+    text(ctx, t("card.debt", { v: s.debt }), cx + 8, y + 29, { color: COL.paper });
+    if (has(this.run, "eye")) text(ctx, t("card.cash", { v: s.cash }), cx + w - 8, y + 29, { color: COL.teal, align: "right" });
+    const hours = shopOpen(s, n.minutes) ? t("card.open_until", { t: clock(s.closes) }) : n.minutes < s.opens ? t("card.opens_at", { t: clock(s.opens) }) : t("card.closed");
     text(ctx, hours, cx + 8, y + 41, { font: "small", color: shopOpen(s, n.minutes) ? COL.green : COL.red });
     const intel = n.intel.filter((i) => i.shopId === s.id);
-    const tags = [...s.revealed.filter((t) => s.traits[t] > 0).map((t) => TRAIT_LABEL[t]), ...intel.map((i) => (i.kind === "secret" ? "Secret" : i.kind === "stash" ? "Stash" : "Hardship"))];
-    text(ctx, tags.length ? tags.join(" · ") : "No intel", cx + 8, y + 51, { font: "small", color: tags.length ? COL.violet : "#5e546c" });
+    const tags = [...s.revealed.filter((k) => s.traits[k] > 0).map((k) => t(`trait.${k}` as Key)), ...intel.map((i) => t(`tag.${i.kind}` as Key))];
+    text(ctx, tags.length ? tags.join(" · ") : t("card.no_intel"), cx + 8, y + 51, { font: "small", color: tags.length ? COL.violet : "#5e546c" });
     if (s.status === "open" && shopOpen(s, n.minutes)) {
       keycap(ctx, "E", cx + 8, y + 62);
-      text(ctx, "Enter the shop", cx + 22, y + 60, { font: "small", color: COL.paper });
+      text(ctx, t("card.enter"), cx + 22, y + 60, { font: "small", color: COL.paper });
     }
   }
 
@@ -520,39 +522,49 @@ export class StreetScene implements Scene {
     const n = this.night;
     const run = this.run;
     // district and clock
-    text(ctx, this.d.name.toUpperCase(), 10, 8, { font: "title", color: COL.paper });
-    text(ctx, `NIGHT ${run.district + 1} OF 10`, 10, 26, { font: "small", color: COL.dim });
+    text(ctx, t(`district.${this.d.id}` as Key).toUpperCase(), 10, 8, { font: "title", color: COL.paper });
+    const sub = 8 + lineHeight("title"); // second HUD row sits under the title font, whatever its size
+    text(ctx, t("hud.night", { n: run.district + 1 }), 10, sub, { font: "small", color: COL.dim });
     const left = n.endMinutes - n.minutes;
     text(ctx, clock(n.minutes), W / 2, 6, { font: "title", color: left < 60 ? COL.red : COL.gold, align: "center" });
-    text(ctx, `DAWN ${clock(n.endMinutes)}`, W / 2, 24, { font: "small", color: COL.dim, align: "center" });
+    text(ctx, t("hud.dawn", { t: clock(n.endMinutes) }), W / 2, sub - 2, { font: "small", color: COL.dim, align: "center" });
     // quota
     const q = n.collected / n.quota;
     text(ctx, `${n.collected} / ${n.quota}`, W - 10, 6, { font: "title", color: q >= 1 ? COL.green : COL.paper, align: "right" });
-    bar(ctx, W - 130, 26, 120, 4, q, q >= 1 ? COL.green : COL.gold);
-    text(ctx, "QUOTA", W - 134, 24, { font: "small", color: COL.dim, align: "right" });
+    bar(ctx, W - 130, sub, 120, 4, q, q >= 1 ? COL.green : COL.gold);
+    text(ctx, t("hud.quota"), W - 134, sub - 2, { font: "small", color: COL.dim, align: "right" });
     // composure and heat
     const by = H - 30;
-    text(ctx, "COMPOSURE", 10, by - 2, { font: "small", color: COL.dim });
-    bar(ctx, 74, by, 90, 4, n.composure / n.maxComposure, COL.teal);
-    text(ctx, "HEAT", 10, by + 9, { font: "small", color: COL.dim });
-    bar(ctx, 74, by + 11, 90, 4, n.heat / 100, n.heat > 70 ? COL.red : "#e08a3c");
-    text(ctx, `FEAR ${Math.round(run.fear)}`, 172, by - 2, { font: "small", color: COL.crimson });
-    text(ctx, `GRACE ${Math.round(run.grace)}`, 172, by + 9, { font: "small", color: COL.teal });
-    text(ctx, `PURSE ${run.purse}`, 240, by - 2, { font: "small", color: COL.gold });
-    text(ctx, ai.status === "online" ? "JEV JUDGE ONLINE" : "LOCAL JUDGE", 240, by + 9, { font: "small", color: ai.status === "online" ? COL.violet : "#5e546c" });
+    // columns flow from measured label widths so longer languages never overlap
+    const bx = 10 + Math.max(measure(t("hud.composure"), "small"), measure(t("hud.heat"), "small")) + 6;
+    text(ctx, t("hud.composure"), 10, by - 2, { font: "small", color: COL.dim });
+    bar(ctx, bx, by, 84, 4, n.composure / n.maxComposure, COL.teal);
+    text(ctx, t("hud.heat"), 10, by + 9, { font: "small", color: COL.dim });
+    bar(ctx, bx, by + 11, 84, 4, n.heat / 100, n.heat > 70 ? COL.red : "#e08a3c");
+    const rx = bx + 84 + 10;
+    const fearTxt = t("hud.fear", { v: Math.round(run.fear) }), graceTxt = t("hud.grace", { v: Math.round(run.grace) });
+    text(ctx, fearTxt, rx, by - 2, { font: "small", color: COL.crimson });
+    text(ctx, graceTxt, rx, by + 9, { font: "small", color: COL.teal });
+    const px = rx + Math.max(measure(fearTxt, "small"), measure(graceTxt, "small")) + 14;
+    text(ctx, t("hud.purse", { v: run.purse }), px, by - 2, { font: "small", color: COL.gold });
+    text(ctx, ai.status === "online" ? t("hud.jev") : t("hud.local"), px, by + 9, { font: "small", color: ai.status === "online" ? COL.violet : "#5e546c" });
     // hints
     const hx = W - 10;
-    let x = hx - measure("Ledger", "small");
-    text(ctx, "Ledger", x, by + 9, { font: "small", color: COL.dim });
+    let x = hx - measure(t("hud.ledger"), "small");
+    text(ctx, t("hud.ledger"), x, by + 9, { font: "small", color: COL.dim });
     x -= keycap(ctx, "TAB", x - 26, by + 8) + 8;
-    text(ctx, "Walk", x - 20, by + 9, { font: "small", color: COL.dim });
-    keycap(ctx, "A", x - 44, by + 8);
-    keycap(ctx, "D", x - 32, by + 8);
-    text(ctx, "Run", hx - 22, by - 2, { font: "small", color: COL.dim });
-    keycap(ctx, "SHIFT", hx - 56, by - 3);
+    // hints are laid out right to left from measured widths, so every language fits
+    const walk = t("hud.walk");
+    x -= measure(walk, "small") + 2;
+    text(ctx, walk, x, by + 9, { font: "small", color: COL.dim });
+    keycap(ctx, "D", x - 12, by + 8);
+    keycap(ctx, "A", x - 24, by + 8);
+    const runLabel = t("hud.run");
+    text(ctx, runLabel, hx - measure(runLabel, "small"), by - 2, { font: "small", color: COL.dim });
+    keycap(ctx, "SHIFT", hx - measure(runLabel, "small") - 34, by - 3);
     if (pointer.touch) {
-      button(ctx, "act", "Enter", W - 70, H - 64, 64, 26, { accent: COL.gold });
-      if (button(ctx, "ledger", "Ledger", W - 92, 36, 84, 18, {})) this.ledgerOpen = true;
+      button(ctx, "act", t("btn.enter"), W - 70, H - 64, 64, 26, { accent: COL.gold });
+      if (button(ctx, "ledger", t("hud.ledger"), W - 92, 36, 84, 18, {})) this.ledgerOpen = true;
     }
   }
 
@@ -562,13 +574,13 @@ export class StreetScene implements Scene {
     ctx.fillRect(0, 0, W, H);
     const x = 40, y = 34, w = W - 80, h = H - 70;
     panel(ctx, x, y, w, h, COL.gold, "rgba(22,14,26,0.97)");
-    text(ctx, "THE LEDGER", x + 12, y + 8, { font: "title", color: COL.gold });
-    text(ctx, `${this.d.name} · ${clock(n.minutes)} · Quota ${n.collected}/${n.quota}`, x + w - 12, y + 12, { font: "small", color: COL.dim, align: "right" });
+    text(ctx, t("ledger.title"), x + 12, y + 8, { font: "title", color: COL.gold });
+    text(ctx, t("ledger.sub", { district: t(`district.${this.d.id}` as Key), t: clock(n.minutes), c: n.collected, q: n.quota }), x + w - 12, y + 12, { font: "small", color: COL.dim, align: "right" });
     let yy = y + 32;
-    text(ctx, "SHOP", x + 12, yy, { font: "small", color: COL.dim });
-    text(ctx, "DEBT", x + 250, yy, { font: "small", color: COL.dim });
-    text(ctx, "HOURS", x + 300, yy, { font: "small", color: COL.dim });
-    text(ctx, "STATUS", x + 390, yy, { font: "small", color: COL.dim });
+    text(ctx, t("ledger.shop"), x + 12, yy, { font: "small", color: COL.dim });
+    text(ctx, t("ledger.debt"), x + 250, yy, { font: "small", color: COL.dim });
+    text(ctx, t("ledger.hours"), x + 300, yy, { font: "small", color: COL.dim });
+    text(ctx, t("ledger.status"), x + 390, yy, { font: "small", color: COL.dim });
     yy += 11;
     for (const s of n.shops) {
       const open = shopOpen(s, n.minutes);
@@ -576,24 +588,24 @@ export class StreetScene implements Scene {
       text(ctx, `${s.name} (${s.owner})`, x + 12, yy, { color: col });
       text(ctx, String(s.debt), x + 250, yy, { color: COL.paper });
       text(ctx, `${clock(s.opens)}-${clock(s.closes)}`, x + 300, yy, { font: "small", color: open ? COL.green : COL.dim });
-      const st = s.status === "open" ? (open ? "Open" : "Closed") : s.status === "paid" ? `Paid ${s.collected}` : s.status === "partial" ? `Part ${s.collected}` : "Banned";
+      const st = s.status === "open" ? (open ? t("st.open") : t("st.closed")) : s.status === "paid" ? t("st.paid", { v: s.collected }) : s.status === "partial" ? t("st.part", { v: s.collected }) : t("st.banned");
       text(ctx, st, x + 390, yy, { font: "small", color: col });
       const intel = n.intel.filter((i) => i.shopId === s.id).length;
-      if (intel) text(ctx, `${intel} INTEL`, x + w - 12, yy, { font: "small", color: COL.violet, align: "right" });
+      if (intel) text(ctx, t("ledger.intel_count", { n: intel }), x + w - 12, yy, { font: "small", color: COL.violet, align: "right" });
       yy += 13;
     }
     yy += 6;
-    text(ctx, "INTEL", x + 12, yy, { font: "small", color: COL.dim });
+    text(ctx, t("ledger.intel"), x + 12, yy, { font: "small", color: COL.dim });
     yy += 11;
-    if (!n.intel.length && !this.run.bankerIntel.length) text(ctx, "You have no intel. Collect debts or rest on a bench to hear gossip.", x + 12, yy, { font: "small", color: "#6e6380" });
-    for (const it of n.intel.slice(-6)) yy += para(ctx, `• ${it.text}`, x + 12, yy, w - 24, { font: "small", color: it.kind === "secret" ? COL.crimson : it.kind === "stash" ? COL.gold : COL.teal });
-    for (const b of this.run.bankerIntel) yy += para(ctx, `• ${b}.`, x + 12, yy, w - 24, { font: "small", color: COL.gold });
+    if (!n.intel.length && !this.run.bankerIntel.length) text(ctx, t("ledger.no_intel"), x + 12, yy, { font: "small", color: "#6e6380" });
+    for (const it of n.intel.slice(-6)) yy += para(ctx, `• ${intelText(it, n)}`, x + 12, yy, w - 24, { font: "small", color: it.kind === "secret" ? COL.crimson : it.kind === "stash" ? COL.gold : COL.teal });
+    for (const b of this.run.bankerIntel) yy += para(ctx, `• ${t(`banker.${Math.max(0, BANKER_SECRETS.indexOf(b))}` as Key)}`, x + 12, yy, w - 24, { font: "small", color: COL.gold });
     const quotaMet = n.collected >= n.quota;
-    if (button(ctx, "endnight", quotaMet ? "End the night" : "End the night early", x + w - 170, y + h - 28, 158, 20, { accent: quotaMet ? COL.green : COL.red })) {
+    if (button(ctx, "endnight", quotaMet ? t("ledger.end") : t("ledger.end_early"), x + w - 170, y + h - 28, 158, 20, { accent: quotaMet ? COL.green : COL.red })) {
       n.minutes = n.endMinutes;
       this.ledgerOpen = false;
     }
-    text(ctx, "Close: TAB or ESC", x + 12, y + h - 20, { font: "small", color: COL.dim });
+    text(ctx, t("ledger.close"), x + 12, y + h - 20, { font: "small", color: COL.dim });
   }
 }
 

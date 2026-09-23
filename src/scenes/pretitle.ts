@@ -4,6 +4,7 @@ import { audio } from "../engine/audio";
 import { text } from "../engine/text";
 import { COL, grain, vignette } from "../ui/widgets";
 import { TitleScene } from "./title";
+import { t } from "../i18n";
 
 export class PreTitleScene implements Scene {
   private t = 0;
@@ -42,7 +43,7 @@ export class PreTitleScene implements Scene {
       ctx.fillRect(0, Math.round(y), W, 1);
     }
     // VCR on-screen display
-    text(ctx, "PLAY", 26, 24, { font: "title", color: "#e8f0ff", shadow: "#1a2a6a" });
+    text(ctx, "PLAY", 26, 24, { font: "logoSmall", color: "#e8f0ff", shadow: "#1a2a6a" });
     if (Math.floor(time * 1.6) % 2 === 0) {
       // the font has no play glyph, so the triangle is drawn in pixels
       for (let r = 0; r < 11; r++) {
@@ -55,14 +56,14 @@ export class PreTitleScene implements Scene {
     }
     const secs = Math.floor(this.t);
     const counter = `SP  00:${String(Math.floor(secs / 60)).padStart(2, "0")}:${String(secs % 60).padStart(2, "0")}`;
-    text(ctx, counter, W - 26, 24, { font: "title", color: "#e8f0ff", shadow: "#1a2a6a", align: "right" });
+    text(ctx, counter, W - 26, 24, { font: "logoSmall", color: "#e8f0ff", shadow: "#1a2a6a", align: "right" });
     const a = Math.min(1, this.t / 1.5);
-    text(ctx, "CITY LADY", W / 2, H / 2 - 30, { font: "title", color: COL.crimson, align: "center", alpha: a * 0.9 });
+    text(ctx, "CITY LADY", W / 2, H / 2 - 30, { font: "logoSmall", color: COL.crimson, align: "center", alpha: a * 0.9 });
     ctx.fillStyle = `rgba(242,193,78,${a * 0.6})`;
     ctx.fillRect(W / 2 - 40, H / 2 - 8, 80, 1);
     const pulse = 0.45 + 0.55 * Math.abs(Math.sin(time * 2.2));
-    text(ctx, "Press a key or tap to start.", W / 2, H / 2 + 6, { color: COL.paper, align: "center", alpha: a * pulse });
-    text(ctx, "Use headphones for the best sound.", W / 2, H - 40, { font: "small", color: COL.dim, align: "center", alpha: a * 0.8 });
+    text(ctx, t("pre.start"), W / 2, H / 2 + 6, { color: COL.paper, align: "center", alpha: a * pulse });
+    text(ctx, t("pre.headphones"), W / 2, H - 40, { font: "small", color: COL.dim, align: "center", alpha: a * 0.8 });
     vignette(ctx, 0.7);
     grain(ctx, 0.08);
   }

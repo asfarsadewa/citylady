@@ -1,26 +1,29 @@
 // Negotiation rules: tactics, trait multipliers, combos, debtor counter-moves and outcomes.
-import { TRAITS, TRAIT_LABEL, type Trait } from "./data";
-import { has, traitWords, type Intel, type Night, type Run, type Shop } from "./state";
+import { TRAITS, type Trait } from "./data";
+import { t as tr, type Key } from "../i18n";
+import { has, type Intel, type Night, type Run, type Shop } from "./state";
 
 export type Tactic = "charm" | "press" | "reason" | "leverage" | "offer" | "read" | "improvise";
 export type Move = "stall" | "plead" | "bluster" | "bargain" | "crack" | "pay";
 
-export const TACTICS: { id: Tactic; name: string; desc: string; cost: number }[] = [
-  { id: "charm", name: "Charm", desc: "Win the debtor over. Charm works on soft-hearted and proud debtors.", cost: 4 },
-  { id: "press", name: "Pressure", desc: "Threaten the consequences. Pressure works on fearful debtors. It adds anger and heat.", cost: 8 },
-  { id: "reason", name: "Reason", desc: "Show the numbers. Reason works on rational debtors.", cost: 4 },
-  { id: "offer", name: "Offer", desc: "Lower the demand by 15%. Offers work on greedy debtors.", cost: 3 },
-  { id: "leverage", name: "Leverage", desc: "Use a secret against the debtor. You need a secret about this debtor.", cost: 10 },
-  { id: "read", name: "Read", desc: "Study the debtor to see one trait. Your next move is 30% stronger.", cost: 2 },
-  { id: "improvise", name: "Say it", desc: "Type your own line. The AI judges the tactic and the fit.", cost: 6 },
+// names are English for the AI judge; the UI shows tac.<id> from the i18n tables
+export const TACTICS: { id: Tactic; name: string; cost: number }[] = [
+  { id: "charm", name: "Charm", cost: 4 },
+  { id: "press", name: "Pressure", cost: 8 },
+  { id: "reason", name: "Reason", cost: 4 },
+  { id: "offer", name: "Offer", cost: 3 },
+  { id: "leverage", name: "Leverage", cost: 10 },
+  { id: "read", name: "Read", cost: 2 },
+  { id: "improvise", name: "Say it", cost: 6 },
 ];
 
-export const COMBOS: Record<string, { name: string; mult: number }> = {
-  "press>charm": { name: "Velvet glove", mult: 1.45 },
-  "reason>offer": { name: "The close", mult: 1.35 },
-  "leverage>press": { name: "Checkmate", mult: 1.5 },
-  "charm>leverage": { name: "Poisoned honey", mult: 1.3 },
-  "read>leverage": { name: "Cold read", mult: 1.25 },
+// id is the i18n suffix: combo.<id>
+export const COMBOS: Record<string, { id: string; mult: number }> = {
+  "press>charm": { id: "velvet", mult: 1.45 },
+  "reason>offer": { id: "close", mult: 1.35 },
+  "leverage>press": { id: "checkmate", mult: 1.5 },
+  "charm>leverage": { id: "honey", mult: 1.3 },
+  "read>leverage": { id: "coldread", mult: 1.25 },
 };
 
 export interface LineJudgment {
@@ -117,7 +120,7 @@ export function act(run: Run, night: Night, d: Duel, tactic: Tactic, rand: () =>
     kind = j.tactic;
     if (j.tactic === "nonsense") {
       d.history.push(tactic);
-      return { damage: 0, temper: 4, combo: null, note: "The line misses. The debtor looks confused.", effectiveness: 0 };
+      return { damage: 0, temper: 4, combo: null, note: tr("note.nonsense"), effectiveness: 0 };
     }
   }
 
@@ -161,7 +164,7 @@ export function act(run: Run, night: Night, d: Duel, tactic: Tactic, rand: () =>
     case "leverage":
       base = 34;
       eff = hasSecret ? 1 + 0.2 * t.pride + 0.2 * t.fear : 0.25;
-      if (!hasSecret) note = "You have no secret about this debtor. The bluff is weak.";
+      if (!hasSecret) note = tr("note.no_secret");
       if (d.banker && hasSecret) eff *= 1 + 0.35 * intel.length;
       temper = 12;
       night.heat += 3;
@@ -172,9 +175,10 @@ export function act(run: Run, night: Night, d: Duel, tactic: Tactic, rand: () =>
       if (hidden.length) {
         revealed = hidden[0];
         d.shop.revealed.push(revealed);
-        const label = TRAIT_LABEL[revealed].toLowerCase();
-        note = t[revealed] > 0 ? `The debtor is ${traitWords({ ...zero(), [revealed]: t[revealed] })[0] ?? label}.` : `The debtor is not ${label}.`;
-      } else note = "You know this debtor well.";
+        note = t[revealed] > 0
+          ? tr("note.read_is", { trait: tr(`deg.${revealed}.${t[revealed]}` as Key) })
+          : tr("note.read_not", { trait: tr(`trait.${revealed}` as Key).toLowerCase() });
+      } else note = tr("note.read_known");
       d.readBonus = true;
       d.history.push("read");
       return { damage: 0, temper: 0, combo: null, note, revealed, effectiveness: 0 };
@@ -192,7 +196,7 @@ export function act(run: Run, night: Night, d: Duel, tactic: Tactic, rand: () =>
       eff *= 0.3;
       night.heat += 10;
       run.fear = Math.min(100, run.fear + 3);
-      note = "The line is abusive. The debtor is furious.";
+      note = tr("note.abusive");
     }
   }
 
@@ -205,7 +209,7 @@ export function act(run: Run, night: Night, d: Duel, tactic: Tactic, rand: () =>
   const lastKind = last;
   const key = `${lastKind}>${kind}`;
   if (COMBOS[key]) {
-    combo = COMBOS[key].name;
+    combo = COMBOS[key].id;
     eff *= COMBOS[key].mult;
   }
   if (d.readBonus) {
@@ -220,7 +224,6 @@ export function act(run: Run, night: Night, d: Duel, tactic: Tactic, rand: () =>
   return { damage, temper, combo, note, effectiveness: eff };
 }
 
-const zero = () => ({ pride: 0, fear: 0, greed: 0, heart: 0, logic: 0 }) as Record<Trait, number>;
 
 export function allowedMoves(d: Duel): Move[] {
   const t = d.shop.traits;
@@ -273,31 +276,31 @@ export function applyMove(night: Night, d: Duel, move: Move, rand: () => number)
   switch (move) {
     case "stall":
       d.resolve += 4 + t.logic * 1.5;
-      return { move, note: "The debtor stalls. Resolve rises." };
+      return { move, note: tr("move.stall") };
     case "plead":
       night.composure = Math.max(0, night.composure - 7);
-      return { move, note: "The debtor pleads. You lose composure." };
+      return { move, note: tr("move.plead") };
     case "bluster":
       d.temper = Math.min(100, d.temper + 8);
       night.composure = Math.max(0, night.composure - 8);
       night.heat += 2;
-      return { move, note: "The debtor gets loud. Anger rises. You lose composure." };
+      return { move, note: tr("move.bluster") };
     case "bargain": {
       const frac = Math.max(0.2, Math.min(0.9, 1 - d.resolve / d.maxResolve));
       const amt = Math.min(d.shop.cash, Math.round((d.demanded * frac * (0.9 + rand() * 0.2)) / 10) * 10);
       d.offer = Math.max(10, amt);
-      return { move, note: `The debtor offers ${d.offer}. Press Settle to take it.` };
+      return { move, note: tr("move.bargain", { v: d.offer }) };
     }
     case "crack": {
       const hidden = TRAITS.filter((k) => !d.shop.revealed.includes(k) && t[k] > 0).sort((a, b) => t[b] - t[a]);
       const revealed = hidden[0];
       if (revealed) d.shop.revealed.push(revealed);
       d.resolve -= 4;
-      return { move, note: "The debtor cracks. You see a trait.", revealed };
+      return { move, note: tr("move.crack"), revealed };
     }
     case "pay":
       d.resolve = 0;
-      return { move, note: "The debtor gives in." };
+      return { move, note: tr("move.pay") };
   }
 }
 
@@ -306,11 +309,22 @@ export function localJudge(line: string, d: Duel, known: string[]): LineJudgment
   const s = line.toLowerCase();
   const score = (words: string[]) => words.reduce((n, w) => n + (s.includes(w) ? 1 : 0), 0);
   const kinds = {
-    charm: score(["please", "friend", "lovely", "like you", "trust", "sorry", "understand", "beautiful", "kind", "together", "help"]),
-    press: score(["or else", "tomorrow", "regret", "consequence", "last chance", "police", "board", "lose", "burn", "break", "now!", "warning"]),
-    reason: score(["interest", "contract", "numbers", "signed", "fair", "cost", "math", "percent", "law", "agreed", "sense"]),
-    offer: score(["discount", "half", "deal", "plan", "forget the fee", "installment", "less", "off", "offer", "split"]),
-    leverage: score(["secret", "i know", "heard", "rumor", "your wife", "your husband", "gamble", "stolen", "books", "hide"]),
+    // English, Bahasa Indonesia and Chinese cues, so offline play understands all three languages
+    charm: score(["please", "friend", "lovely", "like you", "trust", "sorry", "understand", "beautiful", "kind", "together", "help",
+      "tolong", "teman", "cantik", "suka", "percaya", "maaf", "mengerti", "baik", "bersama", "bantu",
+      "请", "朋友", "漂亮", "喜欢", "信任", "抱歉", "理解", "帮", "一起"]),
+    press: score(["or else", "tomorrow", "regret", "consequence", "last chance", "police", "board", "lose", "burn", "break", "now!", "warning",
+      "kalau tidak", "besok", "menyesal", "akibat", "kesempatan terakhir", "polisi", "sekarang", "awas",
+      "否则", "明天", "后悔", "后果", "最后", "警察", "马上", "警告"]),
+    reason: score(["interest", "contract", "numbers", "signed", "fair", "cost", "math", "percent", "law", "agreed", "sense",
+      "bunga", "kontrak", "angka", "tanda tangan", "adil", "hitung", "persen", "hukum", "setuju", "masuk akal",
+      "利息", "合同", "数字", "签", "公平", "成本", "百分", "法律", "道理"]),
+    offer: score(["discount", "half", "deal", "plan", "forget the fee", "installment", "less", "off", "offer", "split",
+      "diskon", "separuh", "setengah", "kesepakatan", "cicil", "potong", "tawar", "bagi",
+      "折", "一半", "交易", "分期", "便宜", "让", "减"]),
+    leverage: score(["secret", "i know", "heard", "rumor", "your wife", "your husband", "gamble", "stolen", "books", "hide",
+      "rahasia", "aku tahu", "dengar", "gosip", "judi", "curian", "sembunyi",
+      "秘密", "我知道", "听说", "传闻", "赌", "偷", "藏"]),
   };
   const best = (Object.entries(kinds) as [keyof typeof kinds, number][]).sort((a, b) => b[1] - a[1])[0];
   const tactic = best[1] === 0 ? (line.trim().length > 12 ? "reason" : "nonsense") : best[0];
@@ -320,6 +334,6 @@ export function localJudge(line: string, d: Duel, known: string[]): LineJudgment
   };
   const fit = Math.max(0, Math.min(1, 0.25 + fitRaw[tactic] / 4));
   const usesFact = known.some((k) => k.toLowerCase().split(" ").filter((w) => w.length > 5).some((w) => s.includes(w))) ? 0.8 : 0.1;
-  const abusive = score(["kill", "hurt you", "whore", "bitch", "die"]) > 0 ? 0.9 : 0;
+  const abusive = score(["kill", "hurt you", "whore", "bitch", "die", "bunuh", "mati kau", "杀了你", "去死"]) > 0 ? 0.9 : 0;
   return { tactic: tactic as LineJudgment["tactic"], fit, usesFact, abusive, source: "local" };
 }

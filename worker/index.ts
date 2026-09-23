@@ -1,8 +1,9 @@
 /// <reference types="@cloudflare/workers-types" />
 // City Lady API worker: Turnstile-gated sessions and TypeSafe Jev judgments for negotiations.
-// Static assets are served by the assets binding; only /api/* reaches this code.
+// Static assets are served by the assets binding; /api/* and the page itself (for share-card URLs) reach this code.
 
 export interface Env {
+  ASSETS: Fetcher;
   TYPESAFE_API_KEY: string;
   TURNSTILE_SECRET_KEY: string;
   TURNSTILE_SITE_KEY: string;
@@ -183,9 +184,29 @@ async function judge(req: Request, env: Env): Promise<Response> {
   });
 }
 
+/** Social scrapers need absolute URLs; the repo stays host-agnostic, so fill them in per request. */
+async function page(req: Request, env: Env): Promise<Response> {
+  const res = await env.ASSETS.fetch(req);
+  if (!(res.headers.get("content-type") ?? "").includes("text/html")) return res;
+  const origin = new URL(req.url).origin;
+  const abs = (attr: string) => ({
+    element(el: Element) {
+      const v = el.getAttribute(attr);
+      if (v && v.startsWith("/")) el.setAttribute(attr, origin + v);
+    },
+  });
+  return new HTMLRewriter()
+    .on('meta[property="og:url"]', abs("content"))
+    .on('meta[property="og:image"]', abs("content"))
+    .on('meta[name="twitter:image"]', abs("content"))
+    .on("head", { element: (el) => void el.append(`<link rel="canonical" href="${origin}/" />`, { html: true }) })
+    .transform(res);
+}
+
 export default {
   async fetch(req: Request, env: Env): Promise<Response> {
     const url = new URL(req.url);
+    if (url.pathname === "/" || url.pathname === "/index.html") return page(req, env);
     if (url.pathname === "/api/config") {
       return json({ siteKey: env.TURNSTILE_SITE_KEY, session: Boolean(await readSession(req, env)) });
     }
