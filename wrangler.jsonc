@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "citylady",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-09-01",
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"]
+  },
+  // Production: copy this file to wrangler.production.jsonc (gitignored), add your custom domain
+  // "routes": [{ "pattern": "game.example.com", "custom_domain": true }] and your Turnstile site key.
+  "vars": {
+    // Cloudflare's always-pass test site key; the production config sets the real one.
+    "TURNSTILE_SITE_KEY": "1x00000000000000000000AA"
+  },
+  "ratelimits": [{ "name": "JUDGE_LIMIT", "namespace_id": "4401", "simple": { "limit": 40, "period": 60 } }],
+  "observability": { "enabled": true }
+  // Secrets (wrangler secret put): TYPESAFE_API_KEY, TURNSTILE_SECRET_KEY, SESSION_SECRET
+}

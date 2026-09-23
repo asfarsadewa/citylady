@@ -1,0 +1,13 @@
+Sprite sheet, ONE row of 8 frames, read left to right, equal spacing, same scale, feet on one shared baseline.
+Keep the exact character from reference image 1: same face, very long silky jet-black hair with blue sheen, gold hoop earrings, crimson belted trench coat, black turtleneck dress, black gloves, black knee-high heeled boots, brown ledger in her hand. Match the pixel-art style, palette, shading and scale of the references. Reference image 2 shows her running cycle: use it as the quality bar for clearly readable, alternating legs.
+Action: an elegant, confident walk cycle facing right. The legs MUST alternate: over the 8 frames each leg takes one full step, and in two frames the legs pass each other under her body. Draw the NEAR leg (her right leg, closer to the viewer) with a brighter boot highlight and the FAR leg (her left leg) slightly darker, so the viewer can tell them apart.
+Frame 1 CONTACT: near leg reaches forward, near heel touches the ground; far leg is behind on its toe.
+Frame 2 DOWN: weight lands on the near leg, near knee slightly bent; far foot lifts off the ground behind.
+Frame 3 PASSING: near leg straight under her body carrying the weight; far leg bent at the knee swinging past it, far foot off the ground next to the near ankle.
+Frame 4 UP: near leg pushes back onto its toe; far leg swings forward and straightens in front.
+Frame 5 CONTACT: far leg reaches forward, far heel touches the ground; near leg is behind on its toe.
+Frame 6 DOWN: weight lands on the far leg; near foot lifts off the ground behind.
+Frame 7 PASSING: far leg straight under her body; near leg bent at the knee swinging past it, near foot off the ground.
+Frame 8 UP: far leg pushes back onto its toe; near leg swings forward in front.
+Arms swing opposite to the legs. The coat skirt opens and swings with each step; her long hair flows behind and bounces slightly with each step.
+Transparent background, no floor, no shadow, no text, no watermark. Full body in every frame, feet and hair never cropped, generous padding between frames.

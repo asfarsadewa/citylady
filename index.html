@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>City Lady</title>
+<meta name="description" content="A pixel art noir game. Vela collects debts across ten districts of a night city. Each debtor has hidden traits. You pick the tactic." />
+<meta property="og:title" content="City Lady" />
+<meta property="og:description" content="Vela collects the city's debts in ten nights. This is a pixel art noir negotiation game." />
+<meta property="og:image" content="/og.png" />
+<meta name="theme-color" content="#07050c" />
+<link rel="icon" href="/favicon.png" />
+<style>
+  html, body { margin: 0; height: 100%; background: #07050c; overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; }
+  canvas#game { image-rendering: pixelated; image-rendering: crisp-edges; display: block; touch-action: none; cursor: default; }
+  #turnstile { position: fixed; right: 12px; bottom: 12px; z-index: 5; }
+  .say-field {
+    position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(78vw, 820px);
+    font: 20px "Pixelify", monospace; color: #f4e9dc; background: #140a1e; border: 2px solid #b58cff;
+    padding: 12px 14px; outline: none; z-index: 10; box-shadow: 0 0 0 4px #0b0714, 0 0 40px #b58cff55;
+  }
+  .say-field::placeholder { color: #6e6380; }
+</style>
+</head>
+<body>
+<canvas id="game" width="640" height="360"></canvas>
+<div id="turnstile"></div>
+<script type="module" src="/src/main.ts"></script>
+</body>
+</html>

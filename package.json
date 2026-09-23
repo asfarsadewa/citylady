@@ -1,0 +1,19 @@
+{
+  "name": "citylady",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && tsc --noEmit -p worker && vite build",
+    "preview": "wrangler dev",
+    "deploy": "npm run build && wrangler deploy -c wrangler.production.jsonc",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p worker"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260923.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.0",
+    "wrangler": "^4.136.3"
+  }
+}

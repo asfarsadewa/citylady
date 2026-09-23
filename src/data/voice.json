@@ -1,0 +1,406 @@
+{
+ "intro_5": {
+  "s": "vela",
+  "t": "And when I reach the top?"
+ },
+ "d1": {
+  "s": "vela",
+  "t": "Lantern Wharf. Mother started here. So do I."
+ },
+ "d2": {
+  "s": "vela",
+  "t": "Rainmarket. Everyone here sells something. Tonight, they pay."
+ },
+ "d3": {
+  "s": "vela",
+  "t": "The Old Quarter. Old families. Old grudges. Older debts."
+ },
+ "d4": {
+  "s": "vela",
+  "t": "Velvet Row. Pretty lights hide the ugliest ledgers."
+ },
+ "d5": {
+  "s": "vela",
+  "t": "The Ironworks. Nobody here bends easily. Neither do I."
+ },
+ "d6": {
+  "s": "vela",
+  "t": "Jade Terrace. A festival night. People are generous when they are happy."
+ },
+ "d7": {
+  "s": "vela",
+  "t": "Snowline. Cold hands, colder hearts."
+ },
+ "d8": {
+  "s": "vela",
+  "t": "The Glass Exchange. Here, the debts have lawyers."
+ },
+ "d9": {
+  "s": "vela",
+  "t": "Skybridge Heights. I can see her tower from here."
+ },
+ "d10": {
+  "s": "vela",
+  "t": "The Spire. One more night, Madame Hale."
+ },
+ "greet_1": {
+  "s": "vela",
+  "t": "Good evening. You know why I am here."
+ },
+ "greet_2": {
+  "s": "vela",
+  "t": "Evening. The Lantern Bank sends its regards."
+ },
+ "greet_3": {
+  "s": "vela",
+  "t": "Close the till. We need to talk."
+ },
+ "charm_1": {
+  "s": "vela",
+  "t": "You have such a lovely shop. It would be a shame to lose it."
+ },
+ "charm_2": {
+  "s": "vela",
+  "t": "I like you. Let us make this easy for both of us."
+ },
+ "charm_3": {
+  "s": "vela",
+  "t": "Come now. You are better than a late payment."
+ },
+ "press_1": {
+  "s": "vela",
+  "t": "The bank is out of patience. So am I."
+ },
+ "press_2": {
+  "s": "vela",
+  "t": "Tomorrow, someone less polite comes through that door."
+ },
+ "press_3": {
+  "s": "vela",
+  "t": "Pay tonight, or your name goes up on the Lantern board."
+ },
+ "reason_1": {
+  "s": "vela",
+  "t": "Look at the numbers. The interest grows every night you wait."
+ },
+ "reason_2": {
+  "s": "vela",
+  "t": "You signed the contract. I only read it back to you."
+ },
+ "reason_3": {
+  "s": "vela",
+  "t": "A little now costs less than everything later."
+ },
+ "leverage_1": {
+  "s": "vela",
+  "t": "I heard something interesting about you today."
+ },
+ "leverage_2": {
+  "s": "vela",
+  "t": "Your neighbors talk. Should I?"
+ },
+ "leverage_3": {
+  "s": "vela",
+  "t": "I know your secret. Let us keep it between us."
+ },
+ "offer_1": {
+  "s": "vela",
+  "t": "I can shave a little off the top. Tonight only."
+ },
+ "offer_2": {
+  "s": "vela",
+  "t": "Pay part of it now, and I will forget the late fee."
+ },
+ "read_1": {
+  "s": "vela",
+  "t": "Hm. Your hands are shaking."
+ },
+ "read_2": {
+  "s": "vela",
+  "t": "Tell me what you are really afraid of."
+ },
+ "paid_1": {
+  "s": "vela",
+  "t": "Pleasure doing business."
+ },
+ "paid_2": {
+  "s": "vela",
+  "t": "The Lantern Bank thanks you."
+ },
+ "paid_3": {
+  "s": "vela",
+  "t": "See? That did not hurt."
+ },
+ "out_1": {
+  "s": "vela",
+  "t": "Fine. I know where to find you."
+ },
+ "out_2": {
+  "s": "vela",
+  "t": "This is not over."
+ },
+ "leave_1": {
+  "s": "vela",
+  "t": "Think about it. I will be back."
+ },
+ "fin_2": {
+  "s": "vela",
+  "t": "I brought your money. And your ledger."
+ },
+ "fin_4": {
+  "s": "vela",
+  "t": "Everything except me."
+ },
+ "end_grace_1": {
+  "s": "vela",
+  "t": "I burned the ledger at dawn. Every name in it. Every debt."
+ },
+ "end_grace_2": {
+  "s": "vela",
+  "t": "The city woke up owing nothing. For one morning, neither did I."
+ },
+ "end_fear_1": {
+  "s": "vela",
+  "t": "Madame Hale left the tower before sunrise."
+ },
+ "end_fear_2": {
+  "s": "vela",
+  "t": "Now every light in Lanternport is borrowed from me."
+ },
+ "end_fail_1": {
+  "s": "vela",
+  "t": "The sun came up, and my ledger was still short."
+ },
+ "intro_1": {
+  "s": "banker",
+  "t": "In Lanternport, every light is borrowed."
+ },
+ "intro_2": {
+  "s": "banker",
+  "t": "Your mother collected for me for twenty years. She died owing me one hundred thousand marks."
+ },
+ "intro_3": {
+  "s": "banker",
+  "t": "Debts do not die, Miss Vale. They are inherited."
+ },
+ "intro_4": {
+  "s": "banker",
+  "t": "Ten districts. Ten nights. Collect what the city owes me, and climb to my tower before the last dawn."
+ },
+ "intro_6": {
+  "s": "banker",
+  "t": "Then we will settle your ledger. Face to face."
+ },
+ "hale_win_1": {
+  "s": "banker",
+  "t": "Adequate. The next district will not be so kind."
+ },
+ "hale_win_2": {
+  "s": "banker",
+  "t": "You are climbing, Miss Vale. Mind the height."
+ },
+ "hale_win_3": {
+  "s": "banker",
+  "t": "Your mother would have been faster. But not by much."
+ },
+ "hale_fear": {
+  "s": "banker",
+  "t": "They whisper your name now. Fear is a fine currency."
+ },
+ "hale_grace": {
+  "s": "banker",
+  "t": "Mercy. How expensive of you."
+ },
+ "hale_fail": {
+  "s": "banker",
+  "t": "Dawn, and your ledger is short. Again, Miss Vale."
+ },
+ "fin_1": {
+  "s": "banker",
+  "t": "So. The daughter reaches the top."
+ },
+ "fin_3": {
+  "s": "banker",
+  "t": "Then let us settle. Everything has a price."
+ },
+ "hale_duel_1": {
+  "s": "banker",
+  "t": "You think you can bargain with me?"
+ },
+ "hale_duel_2": {
+  "s": "banker",
+  "t": "I taught your mother everything she knew."
+ },
+ "hale_duel_3": {
+  "s": "banker",
+  "t": "Careful. I own every door in this city."
+ },
+ "hale_crack": {
+  "s": "banker",
+  "t": "Where did you hear that?"
+ },
+ "hale_yield": {
+  "s": "banker",
+  "t": "Enough. The ledger is closed."
+ },
+ "oldman_refuse_1": {
+  "s": "oldman",
+  "t": "I have nothing for you. Get out of my shop."
+ },
+ "oldman_refuse_2": {
+  "s": "oldman",
+  "t": "Your mother at least had manners."
+ },
+ "oldman_refuse_3": {
+  "s": "oldman",
+  "t": "Come back next month. Maybe."
+ },
+ "oldman_plead_1": {
+  "s": "oldman",
+  "t": "Please. The winter was hard on all of us."
+ },
+ "oldman_plead_2": {
+  "s": "oldman",
+  "t": "I have worked this counter for forty years."
+ },
+ "oldman_angry_1": {
+  "s": "oldman",
+  "t": "You threaten me? In my own shop?"
+ },
+ "oldman_angry_2": {
+  "s": "oldman",
+  "t": "Enough! I have heard enough!"
+ },
+ "oldman_bargain_1": {
+  "s": "oldman",
+  "t": "Half. I can give you half. No more."
+ },
+ "oldman_pay_1": {
+  "s": "oldman",
+  "t": "Take it. Take it and go."
+ },
+ "oldman_pay_2": {
+  "s": "oldman",
+  "t": "Fine. Every last coin."
+ },
+ "youngman_refuse_1": {
+  "s": "youngman",
+  "t": "I, uh, I do not have it right now."
+ },
+ "youngman_refuse_2": {
+  "s": "youngman",
+  "t": "Can we do this next week?"
+ },
+ "youngman_refuse_3": {
+  "s": "youngman",
+  "t": "There must be a mistake in the ledger."
+ },
+ "youngman_plead_1": {
+  "s": "youngman",
+  "t": "Please, I have a family. Just a little more time."
+ },
+ "youngman_plead_2": {
+  "s": "youngman",
+  "t": "I am trying, I swear I am trying."
+ },
+ "youngman_angry_1": {
+  "s": "youngman",
+  "t": "You cannot talk to me like that!"
+ },
+ "youngman_angry_2": {
+  "s": "youngman",
+  "t": "Get out before I call someone!"
+ },
+ "youngman_bargain_1": {
+  "s": "youngman",
+  "t": "What if I pay some now, and the rest later?"
+ },
+ "youngman_pay_1": {
+  "s": "youngman",
+  "t": "Okay. Okay. Here. All of it."
+ },
+ "youngman_pay_2": {
+  "s": "youngman",
+  "t": "Just, please, do not come back."
+ },
+ "woman_refuse_1": {
+  "s": "woman",
+  "t": "Ha! You will get nothing from me, sweetheart."
+ },
+ "woman_refuse_2": {
+  "s": "woman",
+  "t": "I already paid the last collector."
+ },
+ "woman_refuse_3": {
+  "s": "woman",
+  "t": "Do I look like a bank to you?"
+ },
+ "woman_plead_1": {
+  "s": "woman",
+  "t": "Business is slow. You can see that yourself."
+ },
+ "woman_plead_2": {
+  "s": "woman",
+  "t": "Give me one good week. One."
+ },
+ "woman_angry_1": {
+  "s": "woman",
+  "t": "Watch your tone, girl."
+ },
+ "woman_angry_2": {
+  "s": "woman",
+  "t": "Out! Out of my shop!"
+ },
+ "woman_bargain_1": {
+  "s": "woman",
+  "t": "I will give you a third tonight. Take it or leave it."
+ },
+ "woman_pay_1": {
+  "s": "woman",
+  "t": "You have nerve. I will give you that."
+ },
+ "woman_pay_2": {
+  "s": "woman",
+  "t": "There. Now we are square."
+ },
+ "oldwoman_refuse_1": {
+  "s": "oldwoman",
+  "t": "Oh, my dear. I am just an old woman."
+ },
+ "oldwoman_refuse_2": {
+  "s": "oldwoman",
+  "t": "My late husband handled the money."
+ },
+ "oldwoman_refuse_3": {
+  "s": "oldwoman",
+  "t": "Tea? No? Then no money either."
+ },
+ "oldwoman_plead_1": {
+  "s": "oldwoman",
+  "t": "These flowers are all I have left."
+ },
+ "oldwoman_plead_2": {
+  "s": "oldwoman",
+  "t": "Have a heart, child."
+ },
+ "oldwoman_angry_1": {
+  "s": "oldwoman",
+  "t": "Your mother would be ashamed of you."
+ },
+ "oldwoman_angry_2": {
+  "s": "oldwoman",
+  "t": "I will not be spoken to that way."
+ },
+ "oldwoman_bargain_1": {
+  "s": "oldwoman",
+  "t": "I could spare a little. For you, dear."
+ },
+ "oldwoman_pay_1": {
+  "s": "oldwoman",
+  "t": "You remind me of her, you know."
+ },
+ "oldwoman_pay_2": {
+  "s": "oldwoman",
+  "t": "Take it. And be careful out there."
+ }
+}

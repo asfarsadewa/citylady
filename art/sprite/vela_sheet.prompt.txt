@@ -1,0 +1,11 @@
+Use case: stylized-concept
+Asset type: 2D side-scrolling game sprite sheet
+Primary request: Create a sprite sheet of the woman shown in the reference image (Vela), keeping her exact design.
+Subject: a beautiful, elegant young East Asian woman in her mid twenties with a graceful, slender figure and a lovely delicate face with red lips; very long, silky, voluminous jet-black hair with a deep blue sheen that reaches her waist and flows behind her; small gold hoop earrings; long crimson trench coat with a high collar and a belted waist that flares like a skirt as she walks; black turtleneck dress; black gloves; black knee-high heeled boots; a small brown leather ledger in one hand.
+Style/medium: high-end detailed pixel art, like a modern premium indie game, clean readable pixel clusters, limited rich palette, soft cinematic shading with warm rim light. She must look beautiful and elegant in every frame.
+Composition/framing: full-body side view facing right, feet visible, same scale and camera in every frame, generous padding between frames, all frames on one sheet.
+Frame order: top row = 8 frames of a graceful, confident, runway-like walk cycle facing right (contact, down, passing, up for each leg), with her long hair and coat flowing behind her. Bottom row = 6 frames of an idle loop facing right: subtle breathing, hair gently swaying in a night breeze, coat hem moving slightly.
+Background: transparent, no floor, no cast shadow, no checkerboard.
+Text (verbatim): none.
+Constraints: one character per frame; identical face, outfit, hair length and proportions in every frame; no cropped feet or hair; no text; no watermark.
+Avoid: chibi proportions, stiff pose, motion blur, inconsistent face, extra props.

@@ -1,0 +1,514 @@
+[
+ {
+  "kind": "image",
+  "name": "sky_wharf",
+  "w": 2048,
+  "h": 864,
+  "seed": 3017,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, a harbor wharf at dusk, fishing boats, cranes, warehouses, paper lanterns strung over the water, orange and violet sunset sky, gulls. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_rainmarket",
+  "w": 2048,
+  "h": 864,
+  "seed": 3034,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, a dense night market city block in heavy rain, stacked apartment towers, tangled wires, pink and cyan neon signs glowing through rain, wet reflections. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_oldquarter",
+  "w": 2048,
+  "h": 864,
+  "seed": 3051,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, an old quarter of tiled rooftops, wooden tea houses, pagoda silhouettes, a huge full moon, deep blue night, drifting clouds. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_velvet",
+  "w": 2048,
+  "h": 864,
+  "seed": 3068,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, a theatre district at night, art deco theatre towers, marquee bulbs, purple and magenta sky, searchlights sweeping the clouds. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_ironworks",
+  "w": 2048,
+  "h": 864,
+  "seed": 3085,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, an industrial canal district at night, smokestacks, steel bridges, gas holders, sodium orange lights, steam plumes, smoggy green sky. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_jade",
+  "w": 2048,
+  "h": 864,
+  "seed": 3102,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, a hillside garden district during a lantern festival, terraced houses, hundreds of floating sky lanterns rising into a teal night sky. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_snowline",
+  "w": 2048,
+  "h": 864,
+  "seed": 3119,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, a grand winter boulevard at night in snowfall, tram wires, old stone apartment blocks with warm windows, pale blue snowy sky. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_glass",
+  "w": 2048,
+  "h": 864,
+  "seed": 3136,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, a financial district of glass skyscrapers at night, cold blue and white office lights, helicopter lights, reflections, clear dark sky. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_skybridge",
+  "w": 2048,
+  "h": 864,
+  "seed": 3153,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, elevated sky bridges between tall towers high above the city, water tanks, antennas, a vast starry night sky with a thin crescent moon. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "sky_spire",
+  "w": 2048,
+  "h": 864,
+  "seed": 3170,
+  "prompt": "Wide panoramic 2D side-scrolling game background layer, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, distant city skyline, the summit of the city, a colossal black and gold spire tower crowned with lanterns, storm clouds lit by lightning, pre-dawn crimson horizon. Flat side view, no foreground street, no people, no text, atmospheric depth, cinematic lighting, beautiful color harmony."
+ },
+ {
+  "kind": "image",
+  "name": "shop_bakery",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3187,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a small old bakery with a striped awning, bread loaves in the window, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_tailor",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3204,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a tailor shop with mannequins in suits in the display window, brass door handle, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_noodle",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3221,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a noodle bar with a steaming open kitchen counter, stools, hanging red lanterns and fabric curtains over the door, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_pawn",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3238,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a cluttered pawn shop with barred windows, gold coins and watches in the window, three golden balls sign, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_florist",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3255,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a florist shop overflowing with flower buckets on the sidewalk, green wooden frame, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_books",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3272,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a narrow second-hand bookshop with stacked books in the window, green lamp inside, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_apothecary",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3289,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a traditional apothecary with rows of wooden drawers and glass jars visible, herbs hanging, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_jeweler",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3306,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of an elegant jewelry boutique with marble facade, glowing display cases, gold trim, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_teahouse",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3323,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a two storey wooden tea house with paper lanterns, carved balcony, sliding doors, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_records",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3340,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a retro record store with vinyl records and posters in the window, neon guitar sign, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_barber",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3357,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of an old barber shop with a spinning red white striped barber pole, leather chair visible through window, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_fish",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3374,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a fishmonger stall shopfront with ice trays of fish, blue tarp awning, hanging scale, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_clock",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3391,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a clockmaker shop with many antique clocks in the window, a big round clock above the door, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_cabaret",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3408,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a glamorous small cabaret club entrance with marquee light bulbs, red velvet curtain door, poster frames, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_garage",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3425,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a small mechanic garage with a half open roller shutter, tools, oil drums, a motorbike, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_bank",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3442,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of the grand entrance of an imposing black marble bank with golden lanterns, columns and bronze doors, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, a large blank empty sign board above the door with no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_flat",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3459,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a narrow apartment building entrance with a closed door, mailboxes, a potted plant, lit window above, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, no signs, no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_shutter",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3476,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a closed shop with a graffiti covered roller shutter, broken lamp, posters, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, no signs, no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "shop_alley",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3493,
+  "prompt": "Single building facade game sprite, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Front elevation of a dark narrow alley entrance between two buildings with a fire escape, trash bins, a cat, straight-on orthographic view, no perspective, ground level shopfront with the upper floor, no signs, no text. Night time, warm light glowing from windows and door. The whole facade is centred and fully visible, isolated on a flat solid pure magenta #FF00FF background, no ground shadow, no people."
+ },
+ {
+  "kind": "image",
+  "name": "d_baker",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3510,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a round-faced old baker man with flour on his cheeks, white cap, tired kind eyes. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_tailor",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3527,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a precise young woman tailor with measuring tape around her neck, sharp bob haircut, round glasses. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_chef",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3544,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a burly bald noodle chef with a towel on his shoulder, forearm tattoos, sweaty, scowling. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_pawn",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3561,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a sly thin middle-aged pawnbroker man with slicked back hair, gold tooth, loupe on his forehead. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_florist",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3578,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. an elderly florist woman with silver hair in a bun, cardigan, holding a red rose, gentle smile. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_books",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3595,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a nervous bookish young man with messy hair, oversized sweater, clutching a book. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_apothecary",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3612,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a stern old apothecary woman with a jade hairpin, deep wrinkles, knowing eyes. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_jeweler",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3629,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a wealthy smug jeweler man with a monocle, velvet jacket, rings on every finger. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_teahouse",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3646,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a proud middle-aged tea house matron in an embroidered silk dress, fan in hand. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_records",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3663,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a punk young man with a green mohawk, leather jacket with pins, headphones on neck. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_barber",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3680,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. an old barber with a grand handlebar mustache, white coat, scissors in his hand. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_fish",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3697,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a tough fishmonger woman with rolled sleeves, rubber apron, headscarf, loud expression. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_clock",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3714,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a frail old clockmaker with magnifying spectacles, white beard, precise and anxious. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_cabaret",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3731,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a glamorous cabaret owner woman in her forties, feather boa, sequined gown, cigarette holder, dangerous smile. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_mechanic",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3748,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a young mechanic woman with oil smudges on her face, tank top, bandana, defiant look. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_father",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3765,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. a worried young father in a cheap suit, loosened tie, sweat on his brow. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "d_banker",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3782,
+  "prompt": "Bust portrait of a game character, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic chiaroscuro lighting with a warm key light and a cool rim light. an imposing elegant silver-haired older woman banker in a black and gold suit, gold lantern brooch, cold amused eyes. Looking toward the viewer, expressive face, dark smoky interior background with soft bokeh."
+ },
+ {
+  "kind": "image",
+  "name": "vela_smirk",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3799,
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ],
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Close-up bust portrait, she gives a sly confident half smile, one eyebrow slightly raised. highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic lighting, dark night city bokeh background."
+ },
+ {
+  "kind": "image",
+  "name": "vela_cold",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3816,
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ],
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Close-up bust portrait, she stares with cold narrowed eyes and a hard serious expression, harsh red side light. highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic lighting, dark night city bokeh background."
+ },
+ {
+  "kind": "image",
+  "name": "vela_soft",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3833,
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ],
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Close-up bust portrait, she looks down with a soft compassionate sad expression, warm gentle light. highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic lighting, dark night city bokeh background."
+ },
+ {
+  "kind": "image",
+  "name": "vela_tired",
+  "w": 1024,
+  "h": 1024,
+  "seed": 3850,
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ],
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Close-up bust portrait, she looks exhausted and hurt, strands of wet hair on her face, rain, blue light. highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, dramatic cinematic lighting, dark night city bokeh background."
+ },
+ {
+  "kind": "image",
+  "name": "cine_ledger",
+  "w": 1664,
+  "h": 928,
+  "seed": 3867,
+  "prompt": "Cinematic 16:9 widescreen game cutscene frame, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. An old leather ledger book tied with a red ribbon lies on a wooden desk beside a burning candle and a gold coin, rain streaks on a dark window behind, neon light from the street, moody still life. Masterful composition, rich color, volumetric light."
+ },
+ {
+  "kind": "image",
+  "name": "cine_banker",
+  "w": 1664,
+  "h": 928,
+  "seed": 3884,
+  "prompt": "Cinematic 16:9 widescreen game cutscene frame, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. A vast dark office at the top of a tower, an elegant silver-haired older woman in a black and gold suit stands as a silhouette before a huge window overlooking a glittering night city, golden lanterns hang from the ceiling. Masterful composition, rich color, volumetric light."
+ },
+ {
+  "kind": "image",
+  "name": "cine_rooftop",
+  "w": 1664,
+  "h": 928,
+  "seed": 3901,
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Cinematic 16:9 widescreen game cutscene frame, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Vela stands on the edge of a rooftop at night seen from behind at a low dramatic angle, overlooking a vast neon city, her very long hair and crimson coat blowing strongly in the wind, full moon. Masterful composition, rich color, volumetric light.",
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ]
+ },
+ {
+  "kind": "image",
+  "name": "cine_street",
+  "w": 1664,
+  "h": 928,
+  "seed": 3918,
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Cinematic 16:9 widescreen game cutscene frame, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Low-angle dramatic shot of Vela walking toward the camera down a rainy neon-lit street at night, puddle reflections, her long hair flowing, determined expression. Masterful composition, rich color, volumetric light.",
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ]
+ },
+ {
+  "kind": "image",
+  "name": "cine_hall",
+  "w": 1664,
+  "h": 928,
+  "seed": 3935,
+  "prompt": "Cinematic 16:9 widescreen game cutscene frame, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. The immense interior hall of a black marble bank, golden lanterns in rows, a long red carpet leading to a raised desk, cathedral-like columns, gloomy and grand. Masterful composition, rich color, volumetric light."
+ },
+ {
+  "kind": "image",
+  "name": "cine_dawn",
+  "w": 1664,
+  "h": 928,
+  "seed": 3952,
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Cinematic 16:9 widescreen game cutscene frame, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Vela stands at the end of a wooden pier at sunrise, seen from the side, golden sunlight, calm sea, her long black hair flowing softly in the breeze, peaceful expression, the city skyline behind. Masterful composition, rich color, volumetric light.",
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ]
+ },
+ {
+  "kind": "image",
+  "name": "cine_throne",
+  "w": 1664,
+  "h": 928,
+  "seed": 3969,
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Cinematic 16:9 widescreen game cutscene frame, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Vela sits in a large black leather chair behind a desk in a dark tower office, the night city glittering behind her, golden lanterns, cold powerful expression. Masterful composition, rich color, volumetric light.",
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ]
+ },
+ {
+  "kind": "image",
+  "name": "cine_fail",
+  "w": 1664,
+  "h": 928,
+  "seed": 3986,
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Cinematic 16:9 widescreen game cutscene frame, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering. Vela stands alone in an empty street at grey dawn after rain, holding her ledger, shoulders slumped, wet hair, a fallen paper lantern at her feet, melancholic. Masterful composition, rich color, volumetric light.",
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ]
+ },
+ {
+  "kind": "image",
+  "name": "vela_shoulder",
+  "w": 1024,
+  "h": 1024,
+  "seed": 9901,
+  "refs": [
+   "art/raw/vela_face.png",
+   "art/raw/vela_sheet.png"
+  ],
+  "prompt": "The woman in <image1> and <image2> is Vela. Keep her exact face, very long flowing jet-black hair with blue sheen, red lipstick, gold hoop earrings, long crimson trench coat, black turtleneck dress, black gloves and black boots unchanged. Over-the-shoulder view from behind Vela: only her head from behind, her long flowing hair and the shoulder of her crimson coat, occupying the left side of the image, highly detailed 32-bit pixel art, crisp pixel clusters, limited palette, subtle dithering, rim lit, isolated on a flat solid pure magenta #FF00FF background."
+ }
+]

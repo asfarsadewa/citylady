@@ -1,0 +1,13 @@
+node_modules
+dist
+.wrangler
+.dev.vars
+art/raw
+art/voice
+art/*.log
+art/voice_log.txt
+art/sprite/*.log
+art/sprite/*_rejected.png
+wrangler.production.jsonc
+__pycache__/
+*.pyc

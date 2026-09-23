@@ -1,0 +1,7 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "api", "runtimeExecutable": "npx", "runtimeArgs": ["wrangler", "dev", "--port", "8787"], "port": 8787 },
+    { "name": "game", "runtimeExecutable": "npx", "runtimeArgs": ["vite"], "port": 5199 }
+  ]
+}

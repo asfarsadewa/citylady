@@ -1,0 +1,6 @@
+[
+ {"kind":"image","name":"vela_back_a","w":1024,"h":1024,"seed":5151,
+  "prompt":"Highly detailed 32-bit pixel art, crisp pixel clusters, limited palette. Rear view from behind a young woman: we see only the back of her head and her right shoulder, she faces away from the viewer toward the upper right, her face is not visible. Very long flowing jet-black hair with a deep blue sheen cascading down her back and blowing slightly, the high collar and shoulder of a crimson red trench coat, a small gold hoop earring glinting. Over-the-shoulder foreground framing for a cinematic dialogue scene, warm rim light on the hair edge. Isolated on a flat solid pure magenta #FF00FF background."},
+ {"kind":"image","name":"vela_back_b","w":1024,"h":1024,"seed":7373,
+  "prompt":"Highly detailed 32-bit pixel art, crisp pixel clusters, limited palette. Back view of a woman's head and shoulders seen from directly behind and slightly to the left, the back of her head, no face visible. Waist-length silky jet-black hair with blue highlights flowing over the back of a crimson trench coat with a turned-up collar. Cinematic over-the-shoulder shot, dramatic rim light. Isolated on a flat solid pure magenta #FF00FF background."}
+]
