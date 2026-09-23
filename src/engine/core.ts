@@ -205,6 +205,23 @@ export function start(canvas: HTMLCanvasElement) {
   setInterval(() => {
     if (performance.now() - lastFrame > 90) frame();
   }, 45);
+  // dev capture: hidden tabs throttle rAF and timers, but not MessageChannel, so drive frames at a steady 60 fps
+  const mc = new MessageChannel();
+  mc.port1.onmessage = () => {
+    if (!driving) return;
+    if (performance.now() - lastFrame >= 1000 / 60 - 0.5) frame();
+    mc.port2.postMessage(0);
+  };
+  startDriving = () => mc.port2.postMessage(0);
+}
+
+let driving = false;
+let startDriving = () => {};
+/** Dev only: keep a steady frame rate in a hidden or throttled tab (used for video capture). */
+export function setDrive(on: boolean) {
+  const was = driving;
+  driving = on;
+  if (on && !was) startDriving();
 }
 
 // ---------- small helpers ----------

@@ -47,7 +47,8 @@ export class DuelScene implements Scene {
   private stampText = "";
   private stampColor = COL.crimson;
   private resolveGhost = 1;
-  private banner: { text: string; t: number } | null = null;
+  // judge verdicts and combos stack, so a combo never hides what Jev decided
+  private banners: { text: string; t: number; color: string }[] = [];
   private note = "";
   private sleepLeft = 0;
   private sleepRes: (() => void) | null = null;
@@ -163,7 +164,8 @@ export class DuelScene implements Scene {
       this.phase = "player";
       return;
     }
-    await this.velaSay(`greet_${this.r.int(1, 3)}`, "vela_face");
+    const forced = import.meta.env.DEV ? (window as unknown as { __greet?: number }).__greet : undefined;
+    await this.velaSay(`greet_${forced ?? this.r.int(1, 3)}`, "vela_face");
     this.phase = "opening";
   }
 
@@ -202,10 +204,10 @@ export class DuelScene implements Scene {
     if (j.line) {
       const L = j.line;
       const tname = L.tactic === "nonsense" ? t("banner.no_tactic") : t(`tac.${L.tactic}` as Key);
-      this.banner = { text: t("banner.judge", { src: L.source === "jev" ? "JEV" : "LOCAL", tactic: tname, fit: Math.round(L.fit * 100) }) + (L.usesFact > 0.6 ? t("banner.uses_intel") : ""), t: 0 };
+      this.banners.push({ text: t("banner.judge", { src: L.source === "jev" ? "JEV" : "LOCAL", tactic: tname, fit: Math.round(L.fit * 100) }) + (L.usesFact > 0.6 ? t("banner.uses_intel") : ""), t: 0, color: COL.violet });
     }
     if (res.combo) {
-      this.banner = { text: t("banner.combo", { name: t(`combo.${res.combo}` as Key).toUpperCase() }), t: 0 };
+      this.banners.push({ text: t("banner.combo", { name: t(`combo.${res.combo}` as Key).toUpperCase() }), t: 0, color: COL.gold });
       audio.sfx("impact", { vol: 0.8 });
     }
     if (res.damage > 0) this.hit(res.damage, res.effectiveness);
@@ -394,10 +396,8 @@ export class DuelScene implements Scene {
     this.flash = Math.max(0, this.flash - dt * 3);
     this.velaFaceT += dt;
     if (this.sub) this.sub.t += dt;
-    if (this.banner) {
-      this.banner.t += dt;
-      if (this.banner.t > 2.6) this.banner = null;
-    }
+    for (const b of this.banners) b.t += dt;
+    this.banners = this.banners.filter((b) => b.t < 3.2);
     if (this.stampT >= 0) this.stampT += dt;
     this.resolveGhost = lerp(this.resolveGhost, this.d.resolve / this.d.maxResolve, dt * 1.5);
     const pressure = 1 - clamp(this.d.resolve / this.d.maxResolve, 0, 1);
@@ -565,15 +565,16 @@ export class DuelScene implements Scene {
       ctx.globalAlpha = 1;
     }
     if (this.note && this.phase !== "busy") text(ctx, this.note, W / 2, 262, { font: "small", color: COL.teal, align: "center" });
-    if (this.banner) {
-      const b = this.banner;
-      const a = Math.min(1, b.t * 6, (2.6 - b.t) * 3);
+    this.banners.forEach((b, i) => {
+      const a = Math.min(1, b.t * 6, (3.2 - b.t) * 3);
+      const h = lineHeight("bold") + 5;
       const w = measure(b.text, "bold") + 24;
+      const by = 176 - (this.banners.length - 1 - i) * (h + 3);
       ctx.globalAlpha = a;
-      panel(ctx, (W - w) / 2, 176, w, 18, COL.violet, "rgba(30,14,44,0.95)");
-      text(ctx, b.text, W / 2, 179, { font: "bold", color: COL.violet, align: "center" });
+      panel(ctx, (W - w) / 2, by, w, h, b.color, "rgba(30,14,44,0.95)");
+      text(ctx, b.text, W / 2, by + 3, { font: "bold", color: b.color, align: "center" });
       ctx.globalAlpha = 1;
-    }
+    });
 
     this.drawPanel(ctx);
     drawFloats(ctx, 1 / 60);

@@ -447,9 +447,12 @@ export class StreetScene implements Scene {
     ctx.fillRect(0, 0, W, 110);
     vignette(ctx, 0.55);
     grain(ctx, 0.05);
-    // markers above shops
-    this.drawMarkers(ctx, cam);
-    this.drawHud(ctx);
+    // markers above shops (a dev flag hides UI for clean promo capture)
+    const clean = import.meta.env.DEV && (window as unknown as { __clean?: boolean }).__clean;
+    if (!clean) {
+      this.drawMarkers(ctx, cam);
+      this.drawHud(ctx);
+    }
     if (this.ledgerOpen) this.drawLedger(ctx);
     // toasts
     this.toasts.slice(-3).forEach((toast, i) => {

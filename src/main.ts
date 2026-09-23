@@ -1,5 +1,5 @@
 // City Lady: boot, load fonts and art, then show the title screen.
-import { start, go, loadImages, debugState, W, H, type Scene } from "./engine/core";
+import { start, go, loadImages, debugState, setDrive, W, H, type Scene } from "./engine/core";
 import { loadFonts, text } from "./engine/text";
 import { audio } from "./engine/audio";
 import { DISTRICTS, SHOP_TYPES, PORTRAITS } from "./game/data";
@@ -53,6 +53,26 @@ async function boot() {
     w.hold = hold;
     w.tap = (code: string) => hold(code, 60);
     w.sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    // capture the presented canvas (with the VHS pass) plus game audio, and upload it to a local receiver
+    w.rec = (name: string, ms: number) =>
+      new Promise((done) => {
+        const canvas = document.getElementById("game") as HTMLCanvasElement;
+        const stream = canvas.captureStream(30);
+        const a = audio.tapStream();
+        if (a) a.getAudioTracks().forEach((tr) => stream.addTrack(tr));
+        const mr = new MediaRecorder(stream, { mimeType: "video/webm;codecs=vp9,opus", videoBitsPerSecond: 12_000_000 });
+        const parts: Blob[] = [];
+        mr.ondataavailable = (e) => parts.push(e.data);
+        mr.onstop = async () => {
+          const blob = new Blob(parts, { type: "video/webm" });
+          await fetch(`http://127.0.0.1:8799/${name}.webm`, { method: "PUT", body: blob });
+          done(blob.size);
+        };
+        mr.start(250);
+        setTimeout(() => mr.stop(), ms);
+      });
+    w.drive = setDrive;
+    w.muteMusic = (on: boolean) => { audio.volumes.music = on ? 0 : 0.55; audio.applyVolumes(); };
     // click at game coordinates (640x360), for driving menus in tests
     w.clickGame = (gx: number, gy: number) => {
       const c = document.getElementById("game")!;

@@ -167,6 +167,14 @@ class Audio {
     return Math.pow(1 - p, 3);
   }
 
+  /** Dev capture: a MediaStream of everything the player hears. */
+  tapStream(): MediaStream | null {
+    if (!this.ctx) return null;
+    const dest = this.ctx.createMediaStreamDestination();
+    this.master.connect(dest);
+    return dest.stream;
+  }
+
   nowPlaying(): string | null {
     return this.music?.name ?? null;
   }
