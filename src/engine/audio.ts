@@ -167,6 +167,10 @@ class Audio {
     return Math.pow(1 - p, 3);
   }
 
+  nowPlaying(): string | null {
+    return this.music?.name ?? null;
+  }
+
   stopVoice() {
     this.voiceSrc?.stop();
     this.voiceSrc = null;

@@ -4,7 +4,7 @@ import { loadFonts, text } from "./engine/text";
 import { audio } from "./engine/audio";
 import { DISTRICTS, SHOP_TYPES, PORTRAITS } from "./game/data";
 import { initAI } from "./game/ai";
-import { TitleScene } from "./scenes/title";
+import { PreTitleScene } from "./scenes/pretitle";
 import * as flow from "./scenes/flow";
 import { newRun } from "./game/state";
 import { COL, bar } from "./ui/widgets";
@@ -65,7 +65,7 @@ async function boot() {
     run.purse = 3000;
     return flow.startDistrict(run);
   }
-  go(new TitleScene(), 1.2);
+  go(new PreTitleScene(), 1.2);
 }
 
 boot();

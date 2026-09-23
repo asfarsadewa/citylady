@@ -8,6 +8,7 @@ import { StreetScene } from "./street";
 import { DuelScene } from "./duel";
 import { NightEndScene } from "./nightend";
 import { TitleScene } from "./title";
+import { CreditsScene } from "./credits";
 
 let street: StreetScene | null = null;
 
@@ -89,20 +90,19 @@ export function toEnding(kind: "grace" | "fear" | "fail") {
       ? [
           { img: "cine_dawn", from: [-0.6, 0, 1.2], to: [0.2, 0, 1.02], line: "end_grace_1", dur: 7 },
           { img: "cine_dawn", from: [0.2, 0, 1.02], to: [0.4, -0.2, 1.25], line: "end_grace_2", dur: 7 },
-          { img: "cine_dawn", from: [0.4, -0.2, 1.25], to: [0.4, -0.4, 1.35], title: "CITY LADY", sub: "ENDING: DAWN", dur: 7 },
         ]
       : kind === "fear"
         ? [
             { img: "cine_throne", from: [0, 0.4, 1.3], to: [0, 0, 1.05], line: "end_fear_1", dur: 7 },
             { img: "cine_throne", from: [0, 0, 1.05], to: [0, -0.3, 1.2], line: "end_fear_2", dur: 7 },
-            { img: "cine_throne", from: [0, -0.3, 1.2], to: [0, -0.4, 1.3], title: "CITY LADY", sub: "ENDING: THE CHAIR", dur: 7 },
           ]
         : [
             { img: "cine_fail", from: [0, 0, 1.25], to: [0, 0.2, 1.05], line: "end_fail_1", weather: "rain", dur: 6 },
             { img: "cine_fail", from: [0, 0.2, 1.05], to: [0, 0.3, 1.1], title: "GREY DAWN", sub: "THE LEDGER IS SHORT", weather: "rain", dur: 5 },
           ];
   if (kind !== "fail") clearSave();
-  go(new CinematicScene(shots, () => (kind === "fail" ? retryNight() : toTitle()), kind === "fail" ? null : "mus_dawn"), 0.8);
+  const credits = () => go(new CreditsScene(kind === "grace" ? "Ending: Dawn" : "Ending: The Chair", toTitle), 0.8);
+  go(new CinematicScene(shots, () => (kind === "fail" ? retryNight() : credits()), kind === "fail" ? null : "mus_dawn"), 0.8);
   if (kind === "fail") audio.playMusic(null);
 }
 

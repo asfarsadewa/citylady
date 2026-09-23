@@ -62,7 +62,7 @@ Dev URLs: `/?district=3` starts a district. `/?vela=1` opens the sprite viewer.
 | Skylines, shopfronts, portraits, cinematics | Qwen-Image 2.1 on ComfyUI | `tools/comfy.py`, `tools/pixelize.py` |
 | Vela sprite atlas (54 frames) | GPT Image 2.5 Sunburst | `tools/atlas.py` |
 | Pedestrian atlas (8 characters, 64 frames) | GPT Image 2.5 Sunburst | `tools/npc_atlas.py` |
-| Music (4 songs) | YuE2 on ComfyUI | `tools/comfy.py` |
+| Music (5 songs, including "Lampu Kota" in Bahasa Indonesia) | YuE2 on ComfyUI | `tools/comfy.py` |
 | Sound effects and ambience | ElevenLabs | `tools/sfx.py` |
 | Voice (101 lines) | Gemini TTS | `tools/voice.py` |
 

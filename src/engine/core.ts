@@ -214,7 +214,7 @@ export const ease = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * 
 export const easeOut = (t: number) => 1 - Math.pow(1 - t, 3);
 
 /** Debug view of the scene state (dev tooling only). */
-export const debugState = () => ({ current: current?.constructor.name, next: next?.constructor.name, fade, fadeDir, time, phase: (current as unknown as { phase?: string })?.phase, duel: (current as unknown as { d?: { resolve: number; temper: number; done: string | null } })?.d });
+export const debugState = () => ({ current: current?.constructor.name, next: next?.constructor.name, fade, fadeDir, time, music: audio.nowPlaying(), audio: audio.ctx?.state, phase: (current as unknown as { phase?: string })?.phase, duel: (current as unknown as { d?: { resolve: number; temper: number; done: string | null } })?.d });
 
 export function setAnalog(v: number) {
   if (!post) return;
