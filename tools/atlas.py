@@ -74,6 +74,18 @@ def slice_sheet(path, rows):
         lab, n = ndimage.label(band)
         sizes = ndimage.sum(band, lab, range(1, n + 1))
         order = np.argsort(sizes)[::-1]
+        # two figures that touch (a briefcase against the next frame's shoe) form one blob about
+        # twice the usual size: cut it at its thinnest column in the middle third, then relabel
+        while len(order) >= count and sizes[order[0]] > 1.6 * np.median(sizes[order[1:count]]):
+            k = order[0] + 1
+            cols = np.where((lab == k).any(axis=0))[0]
+            x0, x1 = cols[0] + len(cols) // 3, cols[0] + 2 * len(cols) // 3
+            cut = x0 + int(np.argmin((lab[:, x0:x1] == k).sum(axis=0)))
+            band = band.copy()
+            band[:, cut] = False
+            lab, n = ndimage.label(band)
+            sizes = ndimage.sum(band, lab, range(1, n + 1))
+            order = np.argsort(sizes)[::-1]
         big = sorted(order[:count] + 1, key=lambda k: ndimage.center_of_mass(band, lab, k)[1])
         cents = [ndimage.center_of_mass(band, lab, k)[1] for k in big]
         owner = np.zeros(n + 1, int)

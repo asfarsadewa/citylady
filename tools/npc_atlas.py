@@ -12,14 +12,16 @@ from atlas import slice_sheet, SRC, ROOT
 
 CELL_W, CELL_H = 150, 130
 AX, AY = 75, 124
-# (sheet, row) -> character id and spawn tags
+# (sheet, row) -> character id and spawn tags.
+# Walkers use one-row walk sheets (walk_<id>.png) drawn with explicit contact/down/passing/up
+# frames per leg: the first 2x8 sheets repeated one scissor stride, so the feet never swapped.
 CHARS = [
-    ("npc_a.png", 0, "umbrella_man", ["wet"]),
-    ("npc_a.png", 1, "fur_lady", []),
-    ("npc_b.png", 0, "grocer", []),
-    ("npc_b.png", 1, "raincoat", ["wet"]),
-    ("npc_c.png", 0, "docker", []),
-    ("npc_c.png", 1, "suit", []),
+    ("walk_umbrella_man.png", 0, "umbrella_man", ["wet"]),
+    ("walk_fur_lady.png", 0, "fur_lady", []),
+    ("walk_grocer.png", 0, "grocer", []),
+    ("walk_raincoat.png", 0, "raincoat", ["wet"]),
+    ("walk_docker.png", 0, "docker", []),
+    ("walk_suit.png", 0, "suit", []),
     ("npc_d.png", 0, "smoker", ["idle"]),
     ("npc_d.png", 1, "cat", ["cat"]),
 ]
@@ -52,7 +54,7 @@ def main():
     sheets = {}
     for sheet, *_ in CHARS:
         if sheet not in sheets:
-            sheets[sheet] = slice_sheet(SRC / sheet, [8, 8])
+            sheets[sheet] = slice_sheet(SRC / sheet, [8] if sheet.startswith("walk_") else [8, 8])
             print(sheet, len(sheets[sheet]), "frames")
     order, meta = [], {"cell": [CELL_W, CELL_H], "anchor": [AX, AY], "chars": {}}
     for sheet, row, cid, tags in CHARS:
@@ -73,6 +75,13 @@ def main():
         cell.paste(small, (round(AX - hx), AY - small.height), small)
         atlas.alpha_composite(cell, (cx, cy))
     alpha = atlas.getchannel("A").point(lambda v: 255 if v >= 110 else 0)
+    # drop specks left behind where touching figures were cut apart
+    from scipy import ndimage
+    solid = np.asarray(alpha) > 0
+    lab, n = ndimage.label(solid)
+    sizes = ndimage.sum(solid, lab, range(1, n + 1))
+    specks = np.isin(lab, np.where(sizes < 4)[0] + 1)
+    alpha = Image.fromarray(np.where(specks, 0, np.asarray(alpha)).astype(np.uint8), "L")
     rgb = atlas.convert("RGB").filter(ImageFilter.UnsharpMask(radius=1.0, percent=70, threshold=2))
     q = rgb.quantize(colors=64, method=Image.Quantize.MEDIANCUT, dither=Image.Dither.NONE).convert("RGBA")
     q.putalpha(alpha)

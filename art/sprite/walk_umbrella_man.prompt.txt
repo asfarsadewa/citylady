@@ -1,0 +1,14 @@
+Sprite sheet, ONE row of 8 frames, read left to right, equal spacing, same scale, feet on one shared baseline.
+Keep the exact character from reference image 1: a middle-aged man in a long charcoal overcoat and a grey fedora, collar turned up, holding a black open umbrella over his head with his near hand. Same face, clothes, colours and props. Match the pixel-art style, palette, shading and scale of reference image 1.
+Reference image 2 is a different character (a woman in a crimson coat). Use it ONLY as the quality bar for a clearly readable walk cycle with alternating legs. Do not copy her.
+Action: a natural steady, unhurried walk cycle facing right. The legs MUST alternate: over the 8 frames each leg takes one full step, and in two frames the legs pass each other under the body. Draw the NEAR leg (closer to the viewer) with a brighter highlight and the FAR leg slightly darker, so the viewer can tell them apart.
+Frame 1 CONTACT: near leg reaches forward, near heel touches the ground; far leg is behind on its toe.
+Frame 2 DOWN: weight lands on the near leg, near knee slightly bent; far foot lifts off the ground behind.
+Frame 3 PASSING: near leg straight under the body carrying the weight; far leg bent at the knee swinging past it, far foot off the ground next to the near ankle.
+Frame 4 UP: near leg pushes back onto its toe; far leg swings forward and straightens in front.
+Frame 5 CONTACT: far leg reaches forward, far heel touches the ground; near leg is behind on its toe.
+Frame 6 DOWN: weight lands on the far leg; near foot lifts off the ground behind.
+Frame 7 PASSING: far leg straight under the body; near leg bent at the knee swinging past it, near foot off the ground.
+Frame 8 UP: far leg pushes back onto its toe; near leg swings forward in front.
+The head rises slightly in the PASSING and UP frames and dips in the DOWN frames. The umbrella stays level over his head and bobs very slightly with each step. The coat skirt swings with the legs.
+Transparent background, no floor, no shadow, no text, no watermark. Full body in every frame, feet, hat and umbrella never cropped, generous padding between frames.

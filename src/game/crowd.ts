@@ -9,10 +9,12 @@ const META = npcMeta as { cell: number[]; anchor: number[]; cols: number; chars:
 const [CW, CH] = META.cell;
 const [AX, AY] = META.anchor;
 
-// walking speed (px/s) and stride of one full cycle (px) per character, measured from their gait
+// walking speed (px/s) and stride of one full cycle (px) per character. The cycle is two steps,
+// measured from the contact frames of the walk sheets; the speed sets a cadence near Vela's
+// 0.74 cycles/s (fur lady: short quick steps; suit: hurried; docker: heavy and slow)
 const GAIT: Record<string, { speed: number; cycle: number }> = {
-  umbrella_man: { speed: 38, cycle: 74 }, fur_lady: { speed: 28, cycle: 58 }, grocer: { speed: 44, cycle: 76 },
-  raincoat: { speed: 46, cycle: 70 }, docker: { speed: 36, cycle: 78 }, suit: { speed: 62, cycle: 84 }, cat: { speed: 48, cycle: 30 },
+  umbrella_man: { speed: 53, cycle: 78 }, fur_lady: { speed: 45, cycle: 56 }, grocer: { speed: 60, cycle: 70 },
+  raincoat: { speed: 54, cycle: 64 }, docker: { speed: 50, cycle: 72 }, suit: { speed: 72, cycle: 76 }, cat: { speed: 48, cycle: 30 },
 };
 
 interface Ped {
